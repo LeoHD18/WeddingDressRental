@@ -2,49 +2,40 @@ package com.fashion.weddingdressrental;
 
 public class Payment {
     private double amount;
-    private String status;
-    private PaymentType paymentMethod;
-    private Employee employee;
     private Customer customer;
-    private Transaction transaction;
+    private Employee employee;
+    private PaymentType paymentType;
+    private boolean isSuccessful;
 
-    public Payment(double amount, Customer customer, Employee employee, PaymentType paymentMethod, Transaction transaction) {
+    public Payment(double amount, Customer customer, Employee employee, PaymentType paymentType) {
         this.amount = amount;
         this.customer = customer;
         this.employee = employee;
-        this.paymentMethod = paymentMethod;
-        this.transaction = transaction;
-        this.status = "Pending";
+        this.paymentType = paymentType;
+        this.isSuccessful = false;
     }
 
-
-    public boolean checkoutDebitCard(int CardId) {
-        if(customer.getAccount().getId() != CardId ) {
-            System.out.println("Invalid card");
-            return false;
+    // Process payment based on payment type
+    public boolean processPayment() {
+        if (paymentType == PaymentType.DEBIT_CARD) {
+            // Simulate payment processing with debit card
+            isSuccessful = true;  // Assuming the payment is successful for simplicity
+            System.out.println("Payment processed successfully for amount: $" + amount);
         } else {
-            double balance = customer.getAccount().getBalance();
-            if(balance < amount) {
-                System.out.println("Card declined! Not enough balance");
-                return false;
-            } else {
-                customer.getAccount().setBalance(balance -=  amount);
-                System.out.println("Sucessfully paid");
-                this.status = "Paid by Debit Card";
-                transaction.getDress().setAvailable(false);
-                return true;
-            }
+            System.out.println("Payment type not supported.");
         }
+        return isSuccessful;
     }
+    
+    
 
+    public double getAmount() { return amount; }
+    public boolean isSuccessful() { return isSuccessful; }
 
-
-    public void process() {
-        this.status = "Paid";
-        System.out.println("Payment of $" + amount + " has been processed.");
-    }
-
-    public String getStatus() {
-        return status;
+    @Override
+    public String toString() {
+        return "Payment of $" + amount + " by " + paymentType + " for customer: " + 
+               (customer != null ? customer.getName() : "Gift Card Purchase") +
+               ". Processed by Employee: " + employee.getName();
     }
 }

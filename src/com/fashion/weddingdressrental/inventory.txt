@@ -1,0 +1,3 @@
+D-001,Available,10.00
+D-002,Rented,200.00
+D-003,Undergoing Repair,180.00

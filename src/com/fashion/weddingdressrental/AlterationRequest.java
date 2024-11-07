@@ -1,65 +1,44 @@
 package com.fashion.weddingdressrental;
 
 import java.util.Date;
-
 public class AlterationRequest {
     private String alterationId;
     private String details;
     private double cost;
-    private String status; // "Requested", "In Progress", "Completed", "Cannot Complete"
+    private String status;
     private Date completionDate;
+    private Customer customer;
+    private Employee employee;
 
-    public AlterationRequest(String alterationId, String details, double cost, Date completionDate) {
+    // Existing constructor
+    public AlterationRequest(Customer customer, String details, double cost, Date completionDate, Employee employee) {
+        this.alterationId = "ALT-" + (int)(Math.random() * 1000);
+        this.customer = customer;
+        this.details = details;
+        this.cost = cost;
+        this.status = "Requested";
+        this.completionDate = completionDate;
+        this.employee = employee;
+    }
+
+    // Constructor for loading from file
+    public AlterationRequest(String alterationId, String customerId, String details, double cost, Date completionDate) {
         this.alterationId = alterationId;
         this.details = details;
         this.cost = cost;
         this.status = "Requested";
         this.completionDate = completionDate;
+        // customer and employee would be loaded elsewhere based on IDs
     }
 
-    public void startAlteration() {
-        updateStatus("In Progress");
-        System.out.println("Alteration has started for ID: " + alterationId);
-    }
-
-    public void completeAlteration() {
-        updateStatus("Completed");
-        System.out.println("Alteration completed successfully for ID: " + alterationId);
-    }
-
-    public void cannotCompleteAlteration() {
-        updateStatus("Cannot Complete");
-        System.out.println("Alteration request cannot be completed for ID: " + alterationId);
-    }
-
-    public void updateStatus(String newStatus) {
-        this.status = newStatus;
-        System.out.println("Alteration status updated to: " + newStatus);
-    }
-
-    public String getAlterationId() {
-        return alterationId;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public double getCost() {
-        return cost;
-    }
-
-    public Date getCompletionDate() {
-        return completionDate;
-    }
-
-    public String getStatus() {
-        return status;
+    // Convert to CSV format
+    public String toCSV() {
+        return alterationId + "," + customer.getCustomerId() + "," + details + "," + cost + "," + completionDate.getTime();
     }
 
     @Override
     public String toString() {
-        return "AlterationRequest {" +
+        return "AlterationRequest{" +
                 "ID='" + alterationId + '\'' +
                 ", Details='" + details + '\'' +
                 ", Cost=" + cost +
