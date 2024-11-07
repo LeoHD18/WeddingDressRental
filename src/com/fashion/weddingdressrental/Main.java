@@ -33,7 +33,6 @@ import java.util.Date;
 ////        pay.checkoutDebitCard(12354);
 //    }
 
-
 import java.util.Date;
 import java.util.Scanner;
 
@@ -74,8 +73,9 @@ public class Main {
     private static void employeeMenu() {
         while (true) {
             System.out.println("\n--- Employee Menu ---");
-            System.out.println("1. Manage Inventory Status");
+            System.out.println("1. Update Dress Inventory Status");
             System.out.println("2. Process Dress Alteration Request");
+            System.out.println("3. View Inventory");
             System.out.println("0. Go Back to Role Selection");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -83,13 +83,16 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    manageInventoryStatus();
+                    updateDressStatus();
                     break;
                 case 2:
                     processDressAlterationRequest();
                     break;
+                case 3:
+                    inventoryManager.displayInventory();
+                    break;
                 case 0:
-                    return;
+                    return; // Return to role selection
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
@@ -114,14 +117,14 @@ public class Main {
                     viewAccountDetails();
                     break;
                 case 0:
-                    return;
+                    return; // Return to role selection
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
         }
     }
 
-    private static void manageInventoryStatus() {
+    private static void updateDressStatus() {
         System.out.print("Enter Dress ID to update: ");
         String dressId = scanner.nextLine();
         InventoryItem dress = inventoryManager.findDressById(dressId);
@@ -134,12 +137,8 @@ public class Main {
         System.out.print("Enter new status (Available, Rented, Undergoing Repair, Retired): ");
         String newStatus = scanner.nextLine();
 
-        try {
-            inventoryManager.updateDressStatus(dressId, newStatus);
-            System.out.println("Status updated successfully.");
-        } catch (Exception e) {
-            System.out.println("Error updating dress status: " + e.getMessage());
-        }
+        // Employee updates dress status
+        employee.updateDressStatus(inventoryManager, dressId, newStatus);
     }
 
     private static void processDressAlterationRequest() {
@@ -187,3 +186,5 @@ public class Main {
         System.out.println("Preferred Size: " + (customer.getSize() != null ? customer.getSize() : "Not specified"));
     }
 }
+
+

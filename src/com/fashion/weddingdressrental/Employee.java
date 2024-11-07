@@ -27,9 +27,9 @@ public class Employee {
     public void updateDressStatus(InventoryManager inventoryManager, String dressId, String newStatus) {
         try {
             inventoryManager.updateDressStatus(dressId, newStatus);
-            System.out.println("Status of dress " + dressId + " updated to " + newStatus);
         } catch (Exception e) {
             System.out.println("Error updating dress status: " + e.getMessage());
+            System.out.println("Please retry or contact IT support.");
         }
     }
 
