@@ -1,5 +1,7 @@
 package com.fashion.weddingdressrental;
 
+import java.util.Random;
+
 public class Payment {
     private double amount;
     private String status;
@@ -7,6 +9,7 @@ public class Payment {
     private Employee employee;
     private Customer customer;
     private Transaction transaction;
+    private Store store;
 
     public Payment(double amount, Customer customer, Employee employee, PaymentType paymentMethod, Transaction transaction) {
         this.amount = amount;
@@ -31,7 +34,22 @@ public class Payment {
                 customer.getAccount().setBalance(balance -=  amount);
                 System.out.println("Sucessfully paid");
                 this.status = "Paid by Debit Card";
-                transaction.getDress().setAvailable(false);
+                if (transaction.getType() == TransactionType.RENTAL_SALE)
+                {
+                    transaction.getDress().setAvailable(false);
+                    
+                }
+                else if (transaction.getType() == TransactionType.GIFT_CARD_SALE) 
+                {
+                    Random random = new Random();
+                    int randomId = random.nextInt(1000) + 1;
+                    GiftCard gift = new GiftCard(amount, randomId);
+                    transaction.getStore().getListGift().add(gift);
+                    System.out.println("Here is your gift card: ID: " + randomId + ", amount " + amount);
+                   
+                    
+                }
+                
                 return true;
             }
         }
