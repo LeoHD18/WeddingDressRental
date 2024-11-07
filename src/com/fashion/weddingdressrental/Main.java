@@ -2,7 +2,9 @@ package com.fashion.weddingdressrental;
 
 import java.util.Date;
 import java.util.Scanner;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.ParseException;
@@ -183,6 +185,15 @@ public class Main {
     }
 
     private static void sellGiftCardWithDebitCard() {
+        System.out.print("Enter Customer ID: ");
+        String customerId = scanner.nextLine();
+        Customer customer = customerManager.findCustomerById(customerId);
+
+        if (customer == null) {
+            System.out.println("Customer ID not found.");
+            return;
+        }
+
         System.out.print("Enter gift card amount: ");
         double amount = scanner.nextDouble();
         scanner.nextLine(); // consume newline
@@ -192,13 +203,39 @@ public class Main {
             return;
         }
 
-        Payment payment = new Payment(amount, null, employee, PaymentType.DEBIT_CARD);
+        Account customerAccount = customer.getAccount();
+        if (customerAccount == null || !customerAccount.hasSufficientFunds(amount)) {
+            System.out.println("Insufficient funds in the customer's account.");
+            return;
+        }
+
+        // Deduct amount from customer's account balance
+        customerAccount.deductBalance(amount);
+
+        // Process payment and confirm purchase
+        Payment payment = new Payment(amount, customer, employee, PaymentType.DEBIT_CARD);
         if (payment.processPayment()) {
-            System.out.println("Gift card sold successfully.");
+            System.out.println("Gift card sold successfully. Amount deducted: $" + amount);
+            System.out.println("Remaining balance: $" + customerAccount.getBalance());
+
+            // Optionally, save gift card details to file
+            saveGiftCardToFile(customerId, amount);
         } else {
             System.out.println("Payment failed for gift card purchase.");
         }
     }
+
+    // Optional method to save gift card purchase details
+    private static void saveGiftCardToFile(String customerId, double amount) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\yvarun79\\Desktop\\WeddingDressRental\\src\\com\\fashion\\weddingdressrental\\gitcards.txt", true))) {
+            writer.write(customerId + "," + amount + "," + new Date().getTime());
+            writer.newLine();
+            System.out.println("Gift card purchase saved to file.");
+        } catch (IOException e) {
+            System.out.println("Error saving gift card purchase to file: " + e.getMessage());
+        }
+    }
+
 
     private static void requestDressAlteration() {
         System.out.print("Enter your Customer ID: ");
@@ -207,6 +244,21 @@ public class Main {
 
         if (customer == null) {
             System.out.println("Customer ID not found. Please contact an employee to register.");
+            return;
+        }
+
+        System.out.print("Enter Dress ID for alteration: ");
+        String dressId = scanner.nextLine();
+        InventoryItem dress = inventoryManager.findDressById(dressId);
+
+        if (dress == null) {
+            System.out.println("Dress ID not found in inventory.");
+            return;
+        }
+
+        // Check if customer has a reservation for the specified dress
+        if (!hasReservationForDress(customerId, dressId)) {
+            System.out.println("No active reservation found for this dress. Alterations are only available for reserved dresses.");
             return;
         }
 
@@ -221,6 +273,28 @@ public class Main {
         } else {
             System.out.println("Alteration request could not be submitted due to insufficient funds.");
         }
+    }
+
+    // Helper method to check for an existing reservation in reservations.txt
+    private static boolean hasReservationForDress(String customerId, String dressId) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\yvarun79\\Desktop\\WeddingDressRental\\src\\com\\fashion\\weddingdressrental\\reservations.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 3) {
+                    String reservedCustomerId = parts[1];
+                    String reservedDressId = parts[2];
+                    String reservationStatus = parts[5];
+                    
+                    if (reservedCustomerId.equals(customerId) && reservedDressId.equals(dressId) && reservationStatus.equals("Confirmed")) {
+                        return true;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading reservations file: " + e.getMessage());
+        }
+        return false;
     }
 
 
@@ -243,8 +317,13 @@ public class Main {
             return;
         }
 
+        if (dress.isReserved()) {
+            System.out.println("This dress is currently reserved and unavailable.");
+            return;
+        }
+
         double dressPrice = dress.getPrice();
-        
+
         if (customer.getAccount().getBalance() < dressPrice) {
             System.out.println("Insufficient funds. Please add funds to your account or choose a different dress.");
             return;
@@ -259,10 +338,8 @@ public class Main {
             Date startDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDateStr);
             Date endDate = new SimpleDateFormat("yyyy-MM-dd").parse(endDateStr);
 
-            // Deduct the dress price from the customer's account
             customer.getAccount().deductBalance(dressPrice);
 
-            // Create reservation with Customer and InventoryItem
             Reservation reservation = new Reservation("RES-" + customerId, customer, dress, startDate, endDate);
             customer.addReservation(reservation);
             reservation.confirmReservation();
@@ -271,25 +348,11 @@ public class Main {
             System.out.println("Amount deducted from account: $" + dressPrice);
             System.out.println("Remaining balance: $" + customer.getAccount().getBalance());
 
-            // Save the reservation to the reserved_alt.txt file
-            saveReservationToFile(reservation);
-
         } catch (ParseException e) {
             System.out.println("Invalid date format. Please enter dates in YYYY-MM-DD format.");
         }
     }
 
-    // Method to save the reservation to reservations.txt
-    private static void saveReservationToFile(Reservation reservation) {
-        String filePath = "C:\\Users\\yvarun79\\Desktop\\WeddingDressRental\\src\\com\\fashion\\weddingdressrental\\reservations.txt";
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) { // Append mode
-            writer.write(reservation.toCSV());
-            writer.newLine();
-            System.out.println("Reservation saved");
-        } catch (IOException e) {
-            System.out.println("Error saving reservation to file: " + e.getMessage());
-        }
-    }
 
 
     private static void addNewCustomer() {

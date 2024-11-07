@@ -49,6 +49,7 @@ public class Reservation {
 
     public void confirmReservation() {
         if (isAvailable(startDate, endDate)) {
+            dress.markReserved();
             this.status = "Confirmed";
             System.out.println("Reservation confirmed for " + customer.getName() + " from " + startDate + " to " + endDate);
         } else {
@@ -58,11 +59,12 @@ public class Reservation {
 
     public void cancelReservation() {
         this.status = "Cancelled";
+        dress.markAvailable();  // Mark the dress as available again
         System.out.println("Reservation cancelled for " + customer.getName());
     }
 
     public boolean isAvailable(Date requestedStartDate, Date requestedEndDate) {
-        return true;
+        return !dress.isReserved();
     }
 
     public int calculateDuration() {

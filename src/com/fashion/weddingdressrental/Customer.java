@@ -70,6 +70,7 @@ public class Customer {
 
     public void addReservation(Reservation reservation) {
         reservations.add(reservation);
+        ReservationManager.saveReservationsToFile(reservations); // Save after adding a reservation
     }
 
     public Account getAccount() {
@@ -95,7 +96,6 @@ public class Customer {
             return null;
         }
     }
-
 
     @Override
     public String toString() {
