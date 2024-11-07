@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ReservationManager {
-    private static final String FILE_PATH = "reservations.txt";
+    private static final String FILE_PATH = "C:\\Users\\yvarun79\\Desktop\\WeddingDressRental\\src\\com\\fashion\\weddingdressrental\\reservations.txt";
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     // Load reservations from file
