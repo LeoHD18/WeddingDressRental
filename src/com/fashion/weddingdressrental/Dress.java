@@ -6,6 +6,7 @@ public class Dress {
 
     public Dress(String dressID) {
         this.dressID = dressID;
+        this.isAvailable = true;
     }
 
     public String getDressID() {

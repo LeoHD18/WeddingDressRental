@@ -12,6 +12,8 @@ public class Transaction {
     private Dress dress;
     private Customer customer;
     private Payment payment;
+    private Employee employee;
+    private double amount;
 
     // Constructor
     public Transaction(String transactionID, Date startDate, Date endDate, Dress dress, Customer customer, Payment payment) {
@@ -68,5 +70,9 @@ public class Transaction {
 
     public Payment getPayment() {
         return payment;
+    }
+
+    public void checkout(PaymentType paymentMethod){
+        Payment payment = new Payment(amount, customer, employee, paymentMethod);
     }
 }

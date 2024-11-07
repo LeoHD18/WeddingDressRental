@@ -6,13 +6,13 @@ public class Reservation {
     // Attributes
     private String reservationID;
     private Customer customer;
-    private WeddingDress dress;
+    private Dress dress;
     private Date startDate;
     private Date endDate;
     private String status;  // e.g., "Confirmed", "Cancelled"
 
     // Constructor
-    public Reservation(String reservationID, Customer customer, WeddingDress dress, Date startDate, Date endDate) {
+    public Reservation(String reservationID, Customer customer, Dress dress, Date startDate, Date endDate) {
         this.reservationID = reservationID;
         this.customer = customer;
         this.dress = dress;
@@ -30,7 +30,7 @@ public class Reservation {
         return customer;
     }
 
-    public WeddingDress getDress() {
+    public Dress getDress() {
         return dress;
     }
 

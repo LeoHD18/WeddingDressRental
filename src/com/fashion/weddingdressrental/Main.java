@@ -1,5 +1,7 @@
 package com.fashion.weddingdressrental;
 
+import java.util.Date;
+
 public class Main {
     public static void main(String[] args) {
         // // Create instances of required objects
@@ -19,5 +21,15 @@ public class Main {
         // // Check the cleaning status after the transaction
         // WashAndPrep washAndPrep = new WashAndPrep();
         // System.out.println("Cleaning Status: " + washAndPrep.checkStatus());
+        Dress dress = new Dress("haha");
+        BankAccount checking = new BankAccount(200, 12354);
+        Customer customer = new Customer("Alice");
+        customer.setAccount(checking);
+        Employee e = new Employee("Huy");
+        Date startDate = new Date();
+        Date endDate = new Date(startDate.getTime() + (5 * 24 * 60 * 60 * 1000)); // 5 days later
+        Transaction trans = new Transaction("123", startDate, endDate, dress, customer, null);
+        Payment pay = new Payment(100, customer, e, PaymentType.DEBIT_CARD, trans);
+        pay.checkoutDebitCard(12354);
     }
 }

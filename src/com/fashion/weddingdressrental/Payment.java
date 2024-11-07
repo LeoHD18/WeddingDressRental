@@ -6,33 +6,38 @@ public class Payment {
     private PaymentType paymentMethod;
     private Employee employee;
     private Customer customer;
+    private Transaction transaction;
 
-    public Payment(double amount, Customer customer, Employee employee, PaymentType paymentMethod, String status) {
+    public Payment(double amount, Customer customer, Employee employee, PaymentType paymentMethod, Transaction transaction) {
         this.amount = amount;
         this.customer = customer;
         this.employee = employee;
         this.paymentMethod = paymentMethod;
+        this.transaction = transaction;
         this.status = "Pending";
     }
 
-    
 
-    public boolean authDebitCard(Customer c, double amount, int id) {
-        if(c.getAccount().getId() != id ) {
+    public boolean checkoutDebitCard(int CardId) {
+        if(customer.getAccount().getId() != CardId ) {
             System.out.println("Invalid card");
             return false;
         } else {
-            double balance = c.getAccount().getBalance();
+            double balance = customer.getAccount().getBalance();
             if(balance < amount) {
-                System.out.println("Card decline! Not enough balance");
+                System.out.println("Card declined! Not enough balance");
                 return false;
             } else {
-                c.getAccount().setBalance(balance -=  amount);
+                customer.getAccount().setBalance(balance -=  amount);
                 System.out.println("Sucessfully paid");
+                this.status = "Paid by Debit Card";
+                transaction.getDress().setAvailable(false);
                 return true;
             }
         }
     }
+
+
 
     public void process() {
         this.status = "Paid";
