@@ -14,16 +14,20 @@ public class Transaction {
     private Payment payment;
     private Employee employee;
     private double amount;
+    private TransactionType type;
+    private Store store;
 
     // Constructor
-    public Transaction(String transactionID, Date startDate, Date endDate, Dress dress, Customer customer, Payment payment) {
+    public Transaction(String transactionID, Date startDate, Date endDate, Dress dress, Customer customer, TransactionType type, Store store) {
         this.transactionID = transactionID;
         this.startDate = startDate;
         this.endDate = endDate;
         this.rentalDuration = calculateDuration();
         this.dress = dress;
         this.customer = customer;
-        this.payment = payment;
+        this.type = type;
+        this.store = store;
+        
     }
 
     // Method to finalize the transaction
@@ -72,7 +76,18 @@ public class Transaction {
         return payment;
     }
 
-    public void checkout(PaymentType paymentMethod){
-        Payment payment = new Payment(amount, customer, employee, paymentMethod);
+    public TransactionType getType() {
+        return type;
     }
+
+    public void setType(TransactionType type) {
+        this.type = type;
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+
+ 
 }
