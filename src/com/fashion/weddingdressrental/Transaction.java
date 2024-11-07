@@ -1,0 +1,93 @@
+package com.fashion.weddingdressrental;
+
+import java.util.Date;
+
+public class Transaction {
+    
+    // Attributes
+    private String transactionID;
+    private Date startDate;
+    private Date endDate;
+    private int rentalDuration;
+    private Dress dress;
+    private Customer customer;
+    private Payment payment;
+    private Employee employee;
+    private double amount;
+    private TransactionType type;
+    private Store store;
+
+    // Constructor
+    public Transaction(String transactionID, Date startDate, Date endDate, Dress dress, Customer customer, TransactionType type, Store store) {
+        this.transactionID = transactionID;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.rentalDuration = calculateDuration();
+        this.dress = dress;
+        this.customer = customer;
+        this.type = type;
+        this.store = store;
+        
+    }
+
+    // Method to finalize the transaction
+    public void finalizeTransaction() {
+        // Process the payment (assuming process is a method in Payment class)
+        payment.process();
+        // Prepare the dress for the next rental
+        WashAndPrep washAndPrep = new WashAndPrep();
+        washAndPrep.prepareDress(dress);
+        System.out.println("Transaction " + transactionID + " has been finalized.");
+    }
+
+    // Method to calculate rental duration
+    public int calculateDuration() {
+        // Example calculation (duration in days)
+        long difference = endDate.getTime() - startDate.getTime();
+        return (int) (difference / (1000 * 60 * 60 * 24));
+    }
+
+    // Getters
+    public String getTransactionID() {
+        return transactionID;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public int getRentalDuration() {
+        return rentalDuration;
+    }
+
+    public Dress getDress() {
+        return dress;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public TransactionType getType() {
+        return type;
+    }
+
+    public void setType(TransactionType type) {
+        this.type = type;
+    }
+
+    public Store getStore() {
+        return store;
+    }
+
+
+ 
+}
