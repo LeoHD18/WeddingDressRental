@@ -70,7 +70,7 @@ public class Customer {
 
     public void addReservation(Reservation reservation) {
         reservations.add(reservation);
-        ReservationManager.saveReservationsToFile(reservations); // Save after adding a reservation
+        ReservationManager.saveReservationsToFile(reservations);
     }
 
     public Account getAccount() {
@@ -81,20 +81,41 @@ public class Customer {
         this.account = account;
     }
 
+    public boolean deductFromAccount(double amount) {
+        if (account != null && account.hasSufficientFunds(amount)) {
+            account.deductBalance(amount);
+            return true;
+        } else {
+            System.out.println("Insufficient funds in account for customer " + name);
+            return false;
+        }
+    }
+
     public AlterationRequest requestAlteration(String details, Date completionDate, Employee employee) {
         final double alterationCost = 10.0;
-
-        if (account != null && account.hasSufficientFunds(alterationCost)) {
-            account.deductBalance(alterationCost);
+        if (deductFromAccount(alterationCost)) {
             AlterationRequest alterationRequest = new AlterationRequest(this, details, alterationCost, completionDate, employee);
             alterationRequests.add(alterationRequest);
-            AlterationManager.saveAlterationsToFile(alterationRequests); // Save after creation
+            AlterationManager.saveAlterationsToFile(alterationRequests);
             System.out.println("Alteration request created for customer " + name + " with details: " + alterationRequest);
             return alterationRequest;
         } else {
-            System.out.println("Insufficient funds for alteration request for customer " + name);
+            System.out.println("Alteration request could not be processed due to insufficient funds.");
             return null;
         }
+    }
+
+    public boolean purchaseGiftCard(double amount) {
+        if (amount < 10) {
+            System.out.println("Gift card purchase failed: Minimum amount is $10.");
+            return false;
+        }
+        if (deductFromAccount(amount)) {
+            System.out.println("Gift card purchased successfully for customer " + name + " with amount $" + amount);
+            // Optionally save this transaction or take further action
+            return true;
+        }
+        return false;
     }
 
     @Override

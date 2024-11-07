@@ -13,7 +13,6 @@ public class CustomerManager {
         loadCustomersFromFile();
     }
 
-    // Load customer data from the file
     private void loadCustomersFromFile() {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
@@ -25,11 +24,10 @@ public class CustomerManager {
                     double storeCredit = Double.parseDouble(parts[2]);
                     int storePoints = Integer.parseInt(parts[3]);
                     double accountBalance = Double.parseDouble(parts[4]);
-                    Size preferredSize = parts[5].isEmpty() ? null : Size.valueOf(parts[5]);
+                    String preferredSize = parts[5];
 
-                    Customer customer = new Customer(customerId, name, storeCredit, storePoints, preferredSize != null ? preferredSize.toString() : "");
+                    Customer customer = new Customer(customerId, name, storeCredit, storePoints, preferredSize);
                     customer.setAccount(new Account(accountBalance));
-
                     customers.put(customerId, customer);
                 }
             }
@@ -39,7 +37,6 @@ public class CustomerManager {
         }
     }
 
-    // Save customer data to the file
     public void saveCustomersToFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
             for (Customer customer : customers.values()) {
