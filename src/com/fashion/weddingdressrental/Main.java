@@ -37,6 +37,25 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class Main {
+
+        Dress dress = new Dress("haha");
+        BankAccount checking = new BankAccount(200, 12354);
+        Customer customer = new Customer("Alice");
+        customer.setAccount(checking);
+        Employee e = new Employee("Huy");
+        Date startDate = new Date();
+        Date endDate = new Date(startDate.getTime() + (5 * 24 * 60 * 60 * 1000)); // 5 days later
+        Store store = new Store("Dress Rental");
+        Transaction trans = new Transaction("123", startDate, endDate, dress, customer,TransactionType.RENTAL_SALE,store);
+        Payment pay = new Payment(100, customer, e, PaymentType.DEBIT_CARD, trans);
+        pay.checkoutDebitCard(12354);
+        Transaction giftcard = new Transaction("124", startDate, endDate, null, customer,TransactionType.GIFT_CARD_SALE,store);
+        Payment pay2 = new  Payment(110, customer, e, PaymentType.DEBIT_CARD, giftcard);
+        pay2.checkoutDebitCard(12354);
+
+
+
+    
     private static final Scanner scanner = new Scanner(System.in);
     private static final InventoryManager inventoryManager = new InventoryManager();
     private static final Employee employee = new Employee("John");
