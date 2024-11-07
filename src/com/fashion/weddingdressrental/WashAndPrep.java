@@ -15,7 +15,7 @@ public class WashAndPrep {
     }
 
     // Method to prepare the dress by cleaning it
-    public void prepareDress(WeddingDress dress) {
+    public void prepareDress(Dress dress) {
         // Assuming that cleaning the dress involves setting it as "Cleaned"
         this.cleaningStatus = "Cleaned";
         this.prepDate = new Date();

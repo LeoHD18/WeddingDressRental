@@ -9,12 +9,12 @@ public class Transaction {
     private Date startDate;
     private Date endDate;
     private int rentalDuration;
-    private WeddingDress dress;
+    private Dress dress;
     private Customer customer;
     private Payment payment;
 
     // Constructor
-    public Transaction(String transactionID, Date startDate, Date endDate, WeddingDress dress, Customer customer, Payment payment) {
+    public Transaction(String transactionID, Date startDate, Date endDate, Dress dress, Customer customer, Payment payment) {
         this.transactionID = transactionID;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -58,7 +58,7 @@ public class Transaction {
         return rentalDuration;
     }
 
-    public WeddingDress getDress() {
+    public Dress getDress() {
         return dress;
     }
 
