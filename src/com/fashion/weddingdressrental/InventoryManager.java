@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class InventoryManager {
     private Map<String, InventoryItem> inventory;
-    private static final String FILE_PATH = "C:\\Users\\yvarun79\\Desktop\\WeddingDressRental\\src\\com\\fashion\\weddingdressrental\\inventory.txt";
+    private static final String FILE_PATH = "inventory.txt";
 
     public InventoryManager() {
         inventory = new HashMap<>();

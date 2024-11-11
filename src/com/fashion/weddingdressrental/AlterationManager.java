@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 public class AlterationManager {
-    private static final String FILE_PATH = "C:\\Users\\yvarun79\\Desktop\\WeddingDressRental\\src\\com\\fashion\\weddingdressrental\\alterations.txt";
+    private static final String FILE_PATH = "alterations.txt";
 
     // Method to save alteration requests to file (append mode for new additions)
     public static void saveAlterationsToFile(List<AlterationRequest> alterationRequests) {

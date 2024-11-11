@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class CustomerManager {
     private Map<String, Customer> customers;
-    private static final String FILE_PATH = "C:\\Users\\yvarun79\\Desktop\\WeddingDressRental\\src\\com\\fashion\\weddingdressrental\\customer.txt";
+    private static final String FILE_PATH = "customer.txt";
 
     public CustomerManager() {
         customers = new HashMap<>();

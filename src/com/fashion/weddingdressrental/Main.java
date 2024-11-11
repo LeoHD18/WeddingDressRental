@@ -1,15 +1,13 @@
 package com.fashion.weddingdressrental;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
@@ -242,7 +240,7 @@ public class Main {
 
             customerManager.saveCustomersToFile();  // Save updated balance to file
             saveGiftCardToFile(customerId,amount);
-;            System.out.println("Gift card sold successfully.");
+            System.out.println("Gift card sold successfully.");
             System.out.println("Amount deducted from account: $" + amount);
             System.out.println("Remaining balance: $" + customer.getAccount().getBalance());
         } else {
@@ -252,7 +250,7 @@ public class Main {
 
     // Optional method to save gift card purchase details
     private static void saveGiftCardToFile(String customerId, double amount) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("C:\\Users\\yvarun79\\Desktop\\WeddingDressRental\\src\\com\\fashion\\weddingdressrental\\gitcards.txt", true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("gitcards.txt", true))) {
             writer.write(customerId + "," + amount + "," + new Date().getTime());
             writer.newLine();
             System.out.println("Gift card purchase saved to file.");
