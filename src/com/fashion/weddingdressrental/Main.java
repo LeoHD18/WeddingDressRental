@@ -67,17 +67,14 @@ public class Main {
                 case 6 -> checkoutRentalWithDebitCard();
                 case 7 -> sellGiftCardWithDebitCard();
                 case 8 -> customerManager.displayCustomers();
-                case 9 -> confirmReservationMenu(); // Add this line for confirming reservations
-                case 0 -> { return; } // Return to role selection
+                case 9 -> confirmReservationMenu();
+                case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
         }
     }
 
-
-    
     private static void confirmReservationMenu() {
-        // Load all reservations from file
         List<Reservation> allReservations = ReservationManager.loadReservationsFromFile(customerManager, inventoryManager);
 
         if (allReservations.isEmpty()) {
@@ -88,7 +85,6 @@ public class Main {
         System.out.print("Enter the Reservation ID to confirm: ");
         String reservationId = scanner.nextLine();
 
-        // Find the reservation by ID
         Reservation reservationToConfirm = allReservations.stream()
                 .filter(reservation -> reservation.getReservationID().equals(reservationId))
                 .findFirst()
@@ -99,22 +95,16 @@ public class Main {
             return;
         }
 
-        // Update the status to "Confirmed"
         reservationToConfirm.setStatus("Confirmed");
-
-        // Mark the dress as "Rented" and update the inventory
         InventoryItem dress = reservationToConfirm.getDress();
         dress.setStatus("Rented");
 
-        // Update the reservation status in the list (in-memory)
-        ReservationManager.saveReservationsToFile(allReservations);  // Save all reservations at once after modification
-        inventoryManager.saveInventoryToFile();  // Save the updated inventory status
+        ReservationManager.saveReservationsToFile(allReservations);
+        inventoryManager.saveInventoryToFile();
 
         System.out.println("Reservation " + reservationId + " confirmed successfully.");
         System.out.println("Dress " + dress.getDressId() + " status updated to 'Rented'.");
     }
-
-
 
     private static void customerMenu() {
         while (true) {
@@ -131,7 +121,7 @@ public class Main {
                 case 1 -> requestDressAlteration();
                 case 2 -> makeDressReservation();
                 case 3 -> viewAccountDetails();
-                case 0 -> { return; } // Return to role selection
+                case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
         }
@@ -157,9 +147,10 @@ public class Main {
             System.out.println("Error updating dress status: " + e.getMessage());
         }
     }
+
     private static void processDressAlterationRequest() {
         System.out.println("--- Pending Alteration Requests ---");
-        List<AlterationRequest> allAlterations = AlterationManager.loadAlterationsFromFile(); // Load all pending alterations
+        List<AlterationRequest> allAlterations = AlterationManager.loadAlterationsFromFile();
 
         if (allAlterations.isEmpty()) {
             System.out.println("No pending alteration requests found.");
@@ -180,12 +171,10 @@ public class Main {
             return;
         }
 
-        // Process the alteration request
         System.out.print("Enter 'start' to process the alteration: ");
         String action = scanner.nextLine().trim().toLowerCase();
 
         if (action.equals("start")) {
-            // Remove the alteration request from the file
             AlterationManager.removeAlterationFromFile(alterationId);
         } else {
             System.out.println("Invalid action entered.");
@@ -195,51 +184,26 @@ public class Main {
         System.out.println("Alteration request has been processed and removed.");
     }
 
-
-
-
-    // private static void washAndPrepDress() {
-    //     System.out.print("Enter Dress ID for wash and prep: ");
-    //     String dressId = scanner.nextLine();
-    //     InventoryItem dress = inventoryManager.findDressById(dressId);
-
-    //     if (dress == null) {
-    //         System.out.println("Dress not found in inventory.");
-    //         return;
-    //     }
-
-    //     dress.setStatus("In Progress");
-    //     System.out.println("Dress marked for cleaning.");
-        
-    //     // Simulate cleaning and ready status update
-    //     dress.setStatus("Ready");
-    //     System.out.println("Dress is now cleaned and ready for the next rental.");
-    //     inventoryManager.saveInventoryToFile();
-    // }
-
     private static void washAndPrepDress() {
         System.out.print("Enter Dress ID for wash and prep: ");
         String dressId = scanner.nextLine();
         InventoryItem dress = inventoryManager.findDressById(dressId);
-    
+
         if (dress == null) {
             System.out.println("Dress not found in inventory.");
             return;
         }
-    
-        // Check if the dress is available for washing and prepping
+
         if ("Available".equals(dress.getStatus())) {
             dress.setStatus("In Progress");
             System.out.println("Dress marked for cleaning.");
-    
-            // Simulate cleaning and ready status update
+
             dress.setStatus("Ready");
             System.out.println("Dress is now cleaned and ready for the next rental.");
         } else {
             System.out.println("Dress is not available for cleaning. Current status: " + dress.getStatus());
         }
-    
-        // Save the updated inventory status
+
         inventoryManager.saveInventoryToFile();
     }
 
@@ -264,7 +228,7 @@ public class Main {
 
         // Check if the customer has a reservation for the specified dress
         boolean hasReservation = customer.getReservations().stream()
-            .anyMatch(reservation -> reservation.getDress().getDressId().equals(dressId) && reservation.getStatus().equals("Confirmed"));
+                .anyMatch(reservation -> reservation.getDress().getDressId().equals(dressId) && reservation.getStatus().equals("Confirmed"));
 
         if (!hasReservation) {
             System.out.println("Customer does not have a reservation for this dress. Payment cannot be processed.");
@@ -274,24 +238,22 @@ public class Main {
         System.out.print("Enter Account Number: ");
         String accountNumber = scanner.nextLine();
 
-     
+        double dressPrice = dress.getPrice();
 
-        double dressPrice = dress.getPrice(); // Assuming the dress price is stored in the InventoryItem
-        Payment payment = new Payment(dressPrice, customer, employee, PaymentType.DEBIT_CARD);
-
-        if (payment.processPayment(accountNumber)) {
-        // Check if the customer has sufficient balance
+        // Ensure the customer has an account and sufficient funds
         if (customer.getAccount() != null && customer.getAccount().hasSufficientFunds(dressPrice)) {
-             // Use dress price for payment
-            
-                customer.getAccount().deductBalance(dressPrice); // Deduct the amount from the customer's account
+            Payment payment = new Payment(dressPrice, customer, employee, PaymentType.DEBIT_CARD);
+            if (payment.processPayment(accountNumber)) {
+                customer.getAccount().deductBalance(dressPrice,customerId);
                 customerManager.saveCustomersToFile();  // Save updated balance to file
                 Account account = accountManager.findAccountByCustomerId(customerId);
                 accountManager.addOrUpdateAccount(customerId, account);
                 System.out.println("Payment successful and transaction completed for dress: " + dressId);
             } else {
-            System.out.println("Insufficient funds. Please add funds to your account.");
-            }   
+                System.out.println("Payment processing failed.");
+            }
+        } else {
+            System.out.println("Insufficient funds or no account linked. Please add funds to your account.");
         }
     }
 
@@ -318,29 +280,23 @@ public class Main {
         System.out.print("Enter Account Number: ");
         String accountNumber = scanner.nextLine();
 
-        
         Payment payment = new Payment(amount, customer, employee, PaymentType.DEBIT_CARD);
-        if (payment.processPayment(accountNumber)) {
-
-        if (customer.getAccount() != null && customer.getAccount().hasSufficientFunds(amount)) {
-            customer.getAccount().deductBalance(amount);
-
-            customerManager.saveCustomersToFile();  // Save updated balance to file
+        if (payment.processPayment(accountNumber) && customer.getAccount().hasSufficientFunds(amount)) {
+            customer.getAccount().deductBalance(amount,customerId);
+            customerManager.saveCustomersToFile();
             Account account = accountManager.findAccountByCustomerId(customerId);
             accountManager.addOrUpdateAccount(customerId, account);
-            saveGiftCardToFile(customerId,amount);
+            saveGiftCardToFile(customerId, amount);
             System.out.println("Gift card sold successfully.");
             System.out.println("Amount deducted from account: $" + amount);
             System.out.println("Remaining balance: $" + customer.getAccount().getBalance());
         } else {
             System.out.println("Insufficient funds.");
         }
-    } 
     }
 
-    // Optional method to save gift card purchase details
     private static void saveGiftCardToFile(String customerId, double amount) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("gitcards.txt", true))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("giftcards.txt", true))) {
             writer.write(customerId + "," + amount + "," + new Date().getTime());
             writer.newLine();
             System.out.println("Gift card purchase saved to file.");
@@ -381,8 +337,6 @@ public class Main {
 
         if (alterationRequest != null) {
             System.out.println("Alteration request submitted: " + alterationRequest);
-            
-            // Save updated customer data to the file
             customerManager.saveCustomersToFile();
             System.out.println("Customer data has been updated and saved to file.");
         } else {
@@ -411,7 +365,6 @@ public class Main {
         return false;
     }
 
-
     private static void makeDressReservation() {
         System.out.print("Enter your Customer ID: ");
         String customerId = scanner.nextLine();
@@ -431,7 +384,6 @@ public class Main {
             return;
         }
 
-        // Check if the dress is available for reservation
         if (!"Available".equals(dress.getStatus())) {
             System.out.println("Dress is not available for reservation. Current status: " + dress.getStatus());
             return;
@@ -440,33 +392,24 @@ public class Main {
         double dressPrice = dress.getPrice();
 
         if (customer.getAccount() != null && customer.getAccount().hasSufficientFunds(dressPrice)) {
-            // Deduct the amount from the customer's account
-            customer.getAccount().deductBalance(dressPrice); // Deduct balance and update file immediately
+            customer.getAccount().deductBalance(dressPrice,customerId);
+            
+            accountManager.addOrUpdateAccount(customerId, customer.getAccount());
+            Reservation reservation = new Reservation("RES-" + customerId, customer, dress, new Date(), new Date());
+            customer.addReservation(reservation);
 
-            // Create a new reservation
-            Reservation reservation = new Reservation("RES-" + customerId, customer, dress, new Date(), new Date());  // Create reservation with actual dates
-            customer.addReservation(reservation); // Add reservation to customer's list
-
-            // Save the updated reservation to the file
             List<Reservation> allReservations = ReservationManager.loadReservationsFromFile(customerManager, inventoryManager);
             allReservations.add(reservation);
-            ReservationManager.saveReservationsToFile(allReservations);  // Save reservations to file
+            ReservationManager.saveReservationsToFile(allReservations);
 
-            // Save updated customer data
-            customerManager.saveCustomersToFile();  // Save updated customer data
-
+            customerManager.saveCustomersToFile();
             System.out.println("Reservation confirmed for customer " + customer.getName());
             System.out.println("Amount deducted from account: $" + dressPrice);
-            System.out.println("Remaining balance: $" + customer.getAccount().getBalance());  // Ensure balance is correctly updated and printed
+            System.out.println("Remaining balance: $" + customer.getAccount().getBalance());
         } else {
             System.out.println("Insufficient funds. Please add funds to your account.");
         }
     }
-
-
-
-
-
 
     private static void addNewCustomer() {
         System.out.print("Enter Customer Name: ");
@@ -486,10 +429,10 @@ public class Main {
 
         System.out.print("Enter Preferred Size (S, M, L, etc., or press Enter to skip): ");
         String sizeInput = scanner.nextLine();
-        Size preferredSize = sizeInput.isEmpty() ? null : Size.valueOf(sizeInput.toUpperCase());
+        String preferredSize = sizeInput.isEmpty() ? "Not specified" : sizeInput.toUpperCase();
 
         String customerId = "CUST-" + (int) (Math.random() * 1000);
-        Customer customer = new Customer(customerId, name, storeCredit, storePoints, preferredSize != null ? preferredSize.toString() : null);
+        Customer customer = new Customer(customerId, name, storeCredit, storePoints, preferredSize);
         Account account = new Account(accountBalance);
         customer.setAccount(account);
         customerManager.addCustomer(customer);
@@ -511,7 +454,7 @@ public class Main {
         System.out.println("\n--- Account Details ---");
         System.out.println("Customer ID: " + customer.getCustomerId());
         System.out.println("Name: " + customer.getName());
-        System.out.println("Store Credit: " + customer.getStoreCredit());
+        System.out.println("Store Credit: $" + customer.getStoreCredit());
         System.out.println("Store Points: " + customer.getStorePoints());
         if (customer.getAccount() != null) {
             System.out.println("Bank Account Balance: $" + customer.getAccount().getBalance());
@@ -520,7 +463,4 @@ public class Main {
         }
         System.out.println("Preferred Size: " + (customer.getSize() != null ? customer.getSize() : "Not specified"));
     }
-
-    
 }
-

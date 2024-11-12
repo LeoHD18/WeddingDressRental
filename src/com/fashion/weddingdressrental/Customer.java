@@ -73,7 +73,6 @@ public class Customer {
         // Do not save reservations immediately here.
     }
 
-
     public Account getAccount() {
         return account;
     }
@@ -84,16 +83,22 @@ public class Customer {
 
     public boolean deductFromAccount(double amount) {
         if (account != null && account.hasSufficientFunds(amount)) {
-            account.deductBalance(amount);
+            account.deductBalance(amount, customerId); // Pass customerId to deductBalance
             return true;
+        } else if (account == null) {
+            System.out.println("No account found for customer " + name);
         } else {
             System.out.println("Insufficient funds in account for customer " + name);
-            return false;
         }
+        return false;
     }
 
     public AlterationRequest requestAlteration(String details, Date completionDate, Employee employee) {
         final double alterationCost = 10.0;
+        if (account == null) {
+            System.out.println("Alteration request failed: No account found for customer " + name);
+            return null;
+        }
         if (deductFromAccount(alterationCost)) {
             AlterationRequest alterationRequest = new AlterationRequest(this, details, alterationCost, completionDate, employee);
             alterationRequests.add(alterationRequest);
@@ -109,6 +114,10 @@ public class Customer {
     public boolean purchaseGiftCard(double amount) {
         if (amount < 10) {
             System.out.println("Gift card purchase failed: Minimum amount is $10.");
+            return false;
+        }
+        if (account == null) {
+            System.out.println("Gift card purchase failed: No account found for customer " + name);
             return false;
         }
         if (deductFromAccount(amount)) {

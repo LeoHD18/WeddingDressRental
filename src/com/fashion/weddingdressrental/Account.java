@@ -64,25 +64,16 @@ public class Account {
     }
 
     // Deduct amount from the balance
-    public void deductBalance(double amount) {
+    public void deductBalance(double amount, String customerId) {
         if (amount <= balance) {
             balance -= amount;  // Deduct the amount from the balance
             System.out.println("Deducted amount: $" + amount);
             System.out.println("New balance: $" + balance);  // Print new balance after deduction
-            saveAccountToFile(); // Save the updated account balance to the file
+             // Save the updated account balance to the file
         } else {
             System.out.println("Insufficient funds to deduct $" + amount);
         }
     }
 
-    // Save account to file
-    public void saveAccountToFile() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("bank.txt", true))) {
-            writer.write(this.accountNumber + "," + this.balance);
-            writer.newLine();
-            System.out.println("Account saved successfully.");
-        } catch (IOException e) {
-            System.out.println("Error saving account to file: " + e.getMessage());
-        }
-    }
+ 
 }
