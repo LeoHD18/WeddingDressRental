@@ -69,9 +69,10 @@ public class Customer {
     }
 
     public void addReservation(Reservation reservation) {
-        reservations.add(reservation);
-        ReservationManager.saveReservationsToFile(reservations);
+        reservations.add(reservation);  // Just add the reservation to the list
+        // Do not save reservations immediately here.
     }
+
 
     public Account getAccount() {
         return account;

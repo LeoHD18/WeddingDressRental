@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -51,6 +52,7 @@ public class Main {
             System.out.println("6. Checkout Rental with Debit Card");
             System.out.println("7. Sell Gift Card with Debit Card");
             System.out.println("8. View All Customers");
+            System.out.println("9. Confirm Reservation");
             System.out.println("0. Go Back to Role Selection");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -65,11 +67,54 @@ public class Main {
                 case 6 -> checkoutRentalWithDebitCard();
                 case 7 -> sellGiftCardWithDebitCard();
                 case 8 -> customerManager.displayCustomers();
+                case 9 -> confirmReservationMenu(); // Add this line for confirming reservations
                 case 0 -> { return; } // Return to role selection
                 default -> System.out.println("Invalid option. Please try again.");
             }
         }
     }
+
+
+    
+    private static void confirmReservationMenu() {
+        // Load all reservations from file
+        List<Reservation> allReservations = ReservationManager.loadReservationsFromFile(customerManager, inventoryManager);
+
+        if (allReservations.isEmpty()) {
+            System.out.println("No pending reservations found.");
+            return;
+        }
+
+        System.out.print("Enter the Reservation ID to confirm: ");
+        String reservationId = scanner.nextLine();
+
+        // Find the reservation by ID
+        Reservation reservationToConfirm = allReservations.stream()
+                .filter(reservation -> reservation.getReservationID().equals(reservationId))
+                .findFirst()
+                .orElse(null);
+
+        if (reservationToConfirm == null) {
+            System.out.println("Reservation ID not found.");
+            return;
+        }
+
+        // Update the status to "Confirmed"
+        reservationToConfirm.setStatus("Confirmed");
+
+        // Mark the dress as "Rented" and update the inventory
+        InventoryItem dress = reservationToConfirm.getDress();
+        dress.setStatus("Rented");
+
+        // Update the reservation status in the list (in-memory)
+        ReservationManager.saveReservationsToFile(allReservations);  // Save all reservations at once after modification
+        inventoryManager.saveInventoryToFile();  // Save the updated inventory status
+
+        System.out.println("Reservation " + reservationId + " confirmed successfully.");
+        System.out.println("Dress " + dress.getDressId() + " status updated to 'Rented'.");
+    }
+
+
 
     private static void customerMenu() {
         while (true) {
@@ -367,7 +412,6 @@ public class Main {
     }
 
 
-
     private static void makeDressReservation() {
         System.out.print("Enter your Customer ID: ");
         String customerId = scanner.nextLine();
@@ -396,20 +440,31 @@ public class Main {
         double dressPrice = dress.getPrice();
 
         if (customer.getAccount() != null && customer.getAccount().hasSufficientFunds(dressPrice)) {
-            customer.getAccount().deductBalance(dressPrice);
-            Reservation reservation = new Reservation("RES-" + customerId, customer, dress, new Date(), new Date());  // Update with actual dates
-            customer.addReservation(reservation);
-            reservation.confirmReservation();
+            // Deduct the amount from the customer's account
+            customer.getAccount().deductBalance(dressPrice); // Deduct balance and update file immediately
 
-            customerManager.saveCustomersToFile();  // Save updated balance to file
+            // Create a new reservation
+            Reservation reservation = new Reservation("RES-" + customerId, customer, dress, new Date(), new Date());  // Create reservation with actual dates
+            customer.addReservation(reservation); // Add reservation to customer's list
+
+            // Save the updated reservation to the file
+            List<Reservation> allReservations = ReservationManager.loadReservationsFromFile(customerManager, inventoryManager);
+            allReservations.add(reservation);
+            ReservationManager.saveReservationsToFile(allReservations);  // Save reservations to file
+
+            // Save updated customer data
+            customerManager.saveCustomersToFile();  // Save updated customer data
 
             System.out.println("Reservation confirmed for customer " + customer.getName());
             System.out.println("Amount deducted from account: $" + dressPrice);
-            System.out.println("Remaining balance: $" + customer.getAccount().getBalance());
+            System.out.println("Remaining balance: $" + customer.getAccount().getBalance());  // Ensure balance is correctly updated and printed
         } else {
             System.out.println("Insufficient funds. Please add funds to your account.");
         }
     }
+
+
+
 
 
 

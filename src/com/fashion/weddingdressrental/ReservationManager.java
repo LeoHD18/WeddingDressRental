@@ -1,16 +1,14 @@
 package com.fashion.weddingdressrental;
 
 import java.io.*;
-import java.text.SimpleDateFormat;
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ReservationManager {
     private static final String FILE_PATH = "reservations.txt";
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    // Load reservations from file
+ // Load reservations from file
     public static List<Reservation> loadReservationsFromFile(CustomerManager customerManager, InventoryManager inventoryManager) {
         List<Reservation> reservations = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
@@ -32,7 +30,7 @@ public class ReservationManager {
                         Reservation reservation = new Reservation(reservationID, customer, dress, startDate, endDate);
                         reservation.setStatus(status);
                         reservations.add(reservation);
-                        customer.addReservation(reservation);
+                        customer.addReservation(reservation);  // Update customer reservations
                     }
                 }
             }
@@ -43,7 +41,7 @@ public class ReservationManager {
         return reservations;
     }
 
-    // Save all reservations to file
+    // Save the updated reservations list to the file
     public static void saveReservationsToFile(List<Reservation> reservations) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
             for (Reservation reservation : reservations) {
@@ -56,18 +54,36 @@ public class ReservationManager {
         }
     }
 
-    // Add a new reservation and save to file
-    public static void addReservation(Reservation reservation, List<Reservation> reservations) {
-        reservations.add(reservation);
-        saveReservationsToFile(reservations);
-        System.out.println("Reservation added and saved successfully.");
-    }
+    // Update reservation status in the file (this will only save the specific reservation)
+    public static void updateReservationStatus(String reservationId, String newStatus, List<Reservation> reservations) {
+        boolean updated = false;
+        List<String> updatedLines = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 6 && parts[0].equals(reservationId)) {
+                    parts[5] = newStatus;  // Update the status field
+                    line = String.join(",", parts); // Create the updated line
+                    updated = true;
+                }
+                updatedLines.add(line);
+            }
 
-    // Display all reservations
-    public static void displayReservations(List<Reservation> reservations) {
-        System.out.println("\n--- Reservations ---");
-        for (Reservation reservation : reservations) {
-            System.out.println(reservation);
+            if (updated) {
+                // Write all lines back to the file
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
+                    for (String updatedLine : updatedLines) {
+                        writer.write(updatedLine);
+                        writer.newLine();
+                    }
+                }
+                System.out.println("Reservation " + reservationId + " status updated to " + newStatus + ".");
+            } else {
+                System.out.println("Reservation ID not found.");
+            }
+        } catch (IOException e) {
+            System.out.println("Error updating reservation status: " + e.getMessage());
         }
     }
 }
