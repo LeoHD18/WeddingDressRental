@@ -320,7 +320,7 @@ public class Main {
     }
 
     private static boolean hasReservationForDress(String customerId, String dressId) {
-        try (BufferedReader reader = new BufferedReader(new FileReader("C:\\Users\\yvarun79\\Desktop\\WeddingDressRental\\src\\com\\fashion\\weddingdressrental\\reservations.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader("reservations.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
