@@ -1,5 +1,9 @@
 package com.fashion.weddingdressrental;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class Account {
     private double balance;
     private String accountNumber;
@@ -67,6 +71,17 @@ public class Account {
             System.out.println("Invalid deduction amount.");
         } else {
             System.out.println("Insufficient funds to complete this transaction.");
+        }
+    }
+
+    // Save account to file
+    public void saveAccountToFile(String customerId) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("bank.txt", true))) {
+            writer.write((customerId != null ? customerId : "Unknown") + "," + accountNumber + "," + balance);
+            writer.newLine();
+            System.out.println("Account saved successfully.");
+        } catch (IOException e) {
+            System.out.println("Error saving account to file: " + e.getMessage());
         }
     }
 

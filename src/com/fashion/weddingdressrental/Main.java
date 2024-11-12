@@ -11,8 +11,9 @@ import java.util.Scanner;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
+    private static final AccountManager accountManager = new AccountManager();
+    private static final CustomerManager customerManager = new CustomerManager(accountManager);
     private static final InventoryManager inventoryManager = new InventoryManager();
-    private static final CustomerManager customerManager = new CustomerManager();
     private static final Employee employee = new Employee("John");
 
     public static void main(String[] args) {
@@ -199,19 +200,27 @@ public class Main {
             return;
         }
 
-        double dressPrice = dress.getPrice(); // Assuming the dress price is stored in the InventoryItem
+        System.out.print("Enter Account Number: ");
+        String accountNumber = scanner.nextLine();
 
+     
+
+        double dressPrice = dress.getPrice(); // Assuming the dress price is stored in the InventoryItem
+        Payment payment = new Payment(dressPrice, customer, employee, PaymentType.DEBIT_CARD);
+
+        if (payment.processPayment(accountNumber)) {
         // Check if the customer has sufficient balance
         if (customer.getAccount() != null && customer.getAccount().hasSufficientFunds(dressPrice)) {
-            Payment payment = new Payment(dressPrice, customer, employee, PaymentType.DEBIT_CARD); // Use dress price for payment
-            if (payment.processPayment()) {
+             // Use dress price for payment
+            
                 customer.getAccount().deductBalance(dressPrice); // Deduct the amount from the customer's account
+                customerManager.saveCustomersToFile();  // Save updated balance to file
+                Account account = accountManager.findAccountByCustomerId(customerId);
+                accountManager.addOrUpdateAccount(customerId, account);
                 System.out.println("Payment successful and transaction completed for dress: " + dressId);
             } else {
-                System.out.println("Payment failed.");
-            }
-        } else {
             System.out.println("Insufficient funds. Please add funds to your account.");
+            }   
         }
     }
 
@@ -235,10 +244,19 @@ public class Main {
             return;
         }
 
+        System.out.print("Enter Account Number: ");
+        String accountNumber = scanner.nextLine();
+
+        
+        Payment payment = new Payment(amount, customer, employee, PaymentType.DEBIT_CARD);
+        if (payment.processPayment(accountNumber)) {
+
         if (customer.getAccount() != null && customer.getAccount().hasSufficientFunds(amount)) {
             customer.getAccount().deductBalance(amount);
 
             customerManager.saveCustomersToFile();  // Save updated balance to file
+            Account account = accountManager.findAccountByCustomerId(customerId);
+            accountManager.addOrUpdateAccount(customerId, account);
             saveGiftCardToFile(customerId,amount);
             System.out.println("Gift card sold successfully.");
             System.out.println("Amount deducted from account: $" + amount);
@@ -246,6 +264,7 @@ public class Main {
         } else {
             System.out.println("Insufficient funds.");
         }
+    } 
     }
 
     // Optional method to save gift card purchase details
@@ -390,8 +409,10 @@ public class Main {
 
         String customerId = "CUST-" + (int) (Math.random() * 1000);
         Customer customer = new Customer(customerId, name, storeCredit, storePoints, preferredSize != null ? preferredSize.toString() : null);
-        customer.setAccount(new Account(accountBalance));
+        Account account = new Account(accountBalance);
+        customer.setAccount(account);
         customerManager.addCustomer(customer);
+        accountManager.addOrUpdateAccount(customerId, account);
 
         System.out.println("Customer added successfully with ID: " + customer.getCustomerId());
     }
@@ -418,5 +439,7 @@ public class Main {
         }
         System.out.println("Preferred Size: " + (customer.getSize() != null ? customer.getSize() : "Not specified"));
     }
+
+    
 }
 
