@@ -153,22 +153,48 @@ public class Main {
 
 
 
+    // private static void washAndPrepDress() {
+    //     System.out.print("Enter Dress ID for wash and prep: ");
+    //     String dressId = scanner.nextLine();
+    //     InventoryItem dress = inventoryManager.findDressById(dressId);
+
+    //     if (dress == null) {
+    //         System.out.println("Dress not found in inventory.");
+    //         return;
+    //     }
+
+    //     dress.setStatus("In Progress");
+    //     System.out.println("Dress marked for cleaning.");
+        
+    //     // Simulate cleaning and ready status update
+    //     dress.setStatus("Ready");
+    //     System.out.println("Dress is now cleaned and ready for the next rental.");
+    //     inventoryManager.saveInventoryToFile();
+    // }
+
     private static void washAndPrepDress() {
         System.out.print("Enter Dress ID for wash and prep: ");
         String dressId = scanner.nextLine();
         InventoryItem dress = inventoryManager.findDressById(dressId);
-
+    
         if (dress == null) {
             System.out.println("Dress not found in inventory.");
             return;
         }
-
-        dress.setStatus("In Progress");
-        System.out.println("Dress marked for cleaning.");
-        
-        // Simulate cleaning and ready status update
-        dress.setStatus("Ready");
-        System.out.println("Dress is now cleaned and ready for the next rental.");
+    
+        // Check if the dress is available for washing and prepping
+        if ("Available".equals(dress.getStatus())) {
+            dress.setStatus("In Progress");
+            System.out.println("Dress marked for cleaning.");
+    
+            // Simulate cleaning and ready status update
+            dress.setStatus("Ready");
+            System.out.println("Dress is now cleaned and ready for the next rental.");
+        } else {
+            System.out.println("Dress is not available for cleaning. Current status: " + dress.getStatus());
+        }
+    
+        // Save the updated inventory status
         inventoryManager.saveInventoryToFile();
     }
 
