@@ -7,10 +7,13 @@ import java.util.Map;
 public class CustomerManager {
     private Map<String, Customer> customers;
     private static final String FILE_PATH = "customer.txt";
+    private AccountManager accountManager;
 
-    public CustomerManager() {
+    public CustomerManager(AccountManager accountManager) {
         customers = new HashMap<>();
+        this.accountManager = accountManager;
         loadCustomersFromFile();
+        
     }
 
     private void loadCustomersFromFile() {
@@ -27,7 +30,16 @@ public class CustomerManager {
                     String preferredSize = parts[5];
 
                     Customer customer = new Customer(customerId, name, storeCredit, storePoints, preferredSize);
-                    customer.setAccount(new Account(accountBalance));
+                    // Attempt to find the account associated with the customerId
+                    Account account = accountManager.findAccountByCustomerId(customerId);
+                    if (account != null) {
+                        customer.setAccount(account);
+                    } else {
+                        // If no account is found, initialize an account with zero balance
+                        account = new Account(0.0, customerId);
+                        customer.setAccount(account);
+                        accountManager.addOrUpdateAccount(customerId, account); // Save new account to file
+                    }
                     customers.put(customerId, customer);
                 }
             }

@@ -16,11 +16,16 @@ public class Payment {
     }
 
     // Process payment based on payment type
-    public boolean processPayment() {
+    public boolean processPayment(String accountNumber) {
         if (paymentType == PaymentType.DEBIT_CARD) {
-            // Simulate payment processing with debit card
-            isSuccessful = true;  // Assuming the payment is successful for simplicity
-            System.out.println("Payment processed successfully for amount: $" + amount);
+            if (authenticateAccount(accountNumber)) {
+                // Simulate payment processing for a successful transaction
+                isSuccessful = true;
+                System.out.println("Payment processed successfully for amount: $" + amount);
+            } else {
+                System.out.println("Authentication failed.");
+                isSuccessful = false;
+            }
         } else {
             System.out.println("Payment type not supported.");
         }
@@ -31,6 +36,10 @@ public class Payment {
 
     public double getAmount() { return amount; }
     public boolean isSuccessful() { return isSuccessful; }
+    // Authenticate the account by checking if customer ID and account number match
+      private boolean authenticateAccount(String accountNumber) {
+        return customer.getAccount() != null && customer.getAccount().getAccountNumber().equals(accountNumber);
+    }
 
     @Override
     public String toString() {
