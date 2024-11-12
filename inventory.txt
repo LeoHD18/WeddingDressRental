@@ -1,5 +1,5 @@
 D-004,Rented,10.0
-D-003,Undergoing Repair,180.0
+D-003,Rented,180.0
 D-002,Rented,200.0
 D-001,Rented,10.0
 D-005,Rented,10.0

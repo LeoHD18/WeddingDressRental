@@ -97,13 +97,13 @@ public class Main {
 
         reservationToConfirm.setStatus("Confirmed");
         InventoryItem dress = reservationToConfirm.getDress();
-        dress.setStatus("Rented");
+        
 
         ReservationManager.saveReservationsToFile(allReservations);
         inventoryManager.saveInventoryToFile();
 
         System.out.println("Reservation " + reservationId + " confirmed successfully.");
-        System.out.println("Dress " + dress.getDressId() + " status updated to 'Rented'.");
+        
     }
 
     private static void customerMenu() {
@@ -175,14 +175,32 @@ public class Main {
         String action = scanner.nextLine().trim().toLowerCase();
 
         if (action.equals("start")) {
-            AlterationManager.removeAlterationFromFile(alterationId);
+            // Mark the alteration as "altered and ready"
+            alterationRequest.setStatus("altered and ready");
+
+            // Save the updated alteration request to file with new status
+            saveAlterationAsReady(alterationRequest);
+
+          
+
+            System.out.println("Alteration request has been processed and marked as 'altered and ready'.");
         } else {
             System.out.println("Invalid action entered.");
-            return;
         }
-
-        System.out.println("Alteration request has been processed and removed.");
     }
+
+    // Helper method to save the updated alteration with status "altered and ready"
+    private static void saveAlterationAsReady(AlterationRequest alterationRequest) {
+        String filePath = "alterations.txt";
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
+            // Append the alteration with the "altered and ready" status
+            writer.write(alterationRequest.toCSV() + "," + alterationRequest.getStatus());
+            writer.newLine();
+        } catch (IOException e) {
+            System.out.println("Error saving updated alteration: " + e.getMessage());
+        }
+    }
+
 
     private static void washAndPrepDress() {
         System.out.print("Enter Dress ID for wash and prep: ");
@@ -193,6 +211,7 @@ public class Main {
             System.out.println("Dress not found in inventory.");
             return;
         }
+        
 
         if ("Available".equals(dress.getStatus())) {
             dress.setStatus("In Progress");
@@ -220,6 +239,8 @@ public class Main {
         System.out.print("Enter Dress ID: ");
         String dressId = scanner.nextLine();
         InventoryItem dress = inventoryManager.findDressById(dressId);
+        List<Reservation> allReservations = ReservationManager.loadReservationsFromFile(customerManager, inventoryManager);
+
 
         if (dress == null) {
             System.out.println("Dress not found in inventory.");
@@ -248,6 +269,9 @@ public class Main {
                 customerManager.saveCustomersToFile();  // Save updated balance to file
                 Account account = accountManager.findAccountByCustomerId(customerId);
                 accountManager.addOrUpdateAccount(customerId, account);
+                dress.setStatus("Rented");
+                ReservationManager.saveReservationsToFile(allReservations);
+                inventoryManager.saveInventoryToFile();
                 System.out.println("Payment successful and transaction completed for dress: " + dressId);
             } else {
                 System.out.println("Payment processing failed.");
@@ -389,7 +413,7 @@ public class Main {
             return;
         }
 
-        double dressPrice = dress.getPrice();
+        double dressPrice = 10.00;
 
         if (customer.getAccount() != null && customer.getAccount().hasSufficientFunds(dressPrice)) {
             customer.getAccount().deductBalance(dressPrice,customerId);

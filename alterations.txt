@@ -1,3 +1,2 @@
-
-ALT-289,CUST-330,waist,10.0,1731446045844
-ALT-910,CUST-330,waist,10.0,1731447961296
+ALT-518,CUST-337,waist,10.0,1731452931316,Requested
+ALT-518,,waist,10.0,1731452931316,altered and ready,altered and ready
