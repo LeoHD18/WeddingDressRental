@@ -1,5 +1,7 @@
 package com.fashion.weddingdressrental;
 
+import com.fashion.weddingdressrental.DressCustomization.Customization;
+import com.fashion.weddingdressrental.DressCustomization.CustomizationManager;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -7,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -53,6 +56,7 @@ public class Main {
             System.out.println("7. Sell Gift Card with Debit Card");
             System.out.println("8. View All Customers");
             System.out.println("9. Confirm Reservation");
+            System.out.println("10. Process Customization Requests"); // New option
             System.out.println("0. Go Back to Role Selection");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -68,9 +72,52 @@ public class Main {
                 case 7 -> sellGiftCardWithDebitCard();
                 case 8 -> customerManager.displayCustomers();
                 case 9 -> confirmReservationMenu();
+                case 10 -> processCustomizationRequests(); // Call the method for processing customizations
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
+        }
+    }
+
+    //ADDED
+    private static void processCustomizationRequests() {
+        List<Customization> customizations = CustomizationManager.loadCustomizations();
+        
+        if (customizations.isEmpty()) {
+            System.out.println("No pending customization requests.");
+            return;
+        }
+    
+        // Filter and display pending customizations
+        System.out.println("--- Pending Customization Requests ---");
+        customizations.stream()
+            .filter(c -> c.getStatus().equals("Pending"))
+            .forEach(c -> System.out.println(c.toCSV()));
+    
+        System.out.print("\nEnter the Customization ID to process: ");
+        String customizationId = scanner.nextLine();
+    
+        Customization customization = customizations.stream()
+            .filter(c -> c.getCustomizationId().equals(customizationId))
+            .findFirst()
+            .orElse(null);
+    
+        if (customization == null) {
+            System.out.println("Invalid Customization ID.");
+            return;
+        }
+    
+        System.out.println("Customization Details: " + customization.toCSV());
+        System.out.print("Approve customization? (Y/N): ");
+        String response = scanner.nextLine().trim().toUpperCase();
+    
+        String newStatus = response.equals("Y") ? "Approved" : "Rejected";
+        CustomizationManager.updateCustomizationStatus(customizationId, newStatus);
+    
+        if (newStatus.equals("Approved")) {
+            System.out.println("Customization approved. Ready for reservation.");
+        } else {
+            System.out.println("Customization rejected.");
         }
     }
 
@@ -111,7 +158,8 @@ public class Main {
             System.out.println("\n--- Customer Menu ---");
             System.out.println("1. Request Dress Alteration");
             System.out.println("2. Make a Dress Reservation");
-            System.out.println("3. View Account Details");
+            System.out.println("3. Customize a Dress"); // New Option
+            System.out.println("4. View Account Details");
             System.out.println("0. Go Back to Role Selection");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -120,12 +168,118 @@ public class Main {
             switch (choice) {
                 case 1 -> requestDressAlteration();
                 case 2 -> makeDressReservation();
-                case 3 -> viewAccountDetails();
+                case 3 -> customizeDress(); // Call the new method
+                case 4 -> viewAccountDetails();
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
         }
     }
+
+    //ADDED
+    private static void customizeDress() {
+    System.out.print("Enter your Customer ID: ");
+    String customerId = scanner.nextLine();
+    Customer customer = customerManager.findCustomerById(customerId);
+
+    if (customer == null) {
+        System.out.println("Customer ID not found. Please contact an employee to register.");
+        return;
+    }
+
+    System.out.print("Enter Dress ID to customize: ");
+    String dressId = scanner.nextLine();
+    InventoryItem dress = inventoryManager.findDressById(dressId);
+
+    if (dress == null) {
+        System.out.println("Dress not found in inventory.");
+        return;
+    }
+
+    List<String> customizations = new ArrayList<>();
+    while (true) {
+        System.out.println("Choose customization options:");
+        System.out.println("1. Add Embroidery (e.g., floral pattern, initials)");
+        System.out.println("2. Add Lace (e.g., sleeves, hemline, neckline)");
+        System.out.println("3. Add Accessories (e.g., beads, sequins, brooch)");
+        System.out.println("4. Custom Color (e.g., pastel blue, ivory, blush pink)");
+        System.out.println("5. Other (manual entry)");
+        System.out.print("Enter your choice (1-5): ");
+
+        int choice = 0;
+        try {
+            choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a number between 1 and 5.");
+            scanner.nextLine(); // Clear invalid input
+            continue;
+        }
+
+        String detail;
+        switch (choice) {
+            case 1 -> {
+                System.out.print("Enter embroidery details (e.g., floral pattern): ");
+                detail = "Embroidery: " + scanner.nextLine();
+                customizations.add(detail);
+            }
+            case 2 -> {
+                System.out.print("Enter lace details (e.g., hemline, neckline): ");
+                detail = "Lace: " + scanner.nextLine();
+                customizations.add(detail);
+            }
+            case 3 -> {
+                System.out.print("Enter accessory details (e.g., beads, sequins): ");
+                detail = "Accessories: " + scanner.nextLine();
+                customizations.add(detail);
+            }
+            case 4 -> {
+                System.out.print("Enter color details (e.g., pastel blue): ");
+                detail = "Color: " + scanner.nextLine();
+                customizations.add(detail);
+            }
+            case 5 -> {
+                System.out.print("Enter your custom details: ");
+                detail = "Custom: " + scanner.nextLine();
+                customizations.add(detail);
+            }
+            default -> {
+                System.out.println("Invalid option. Please choose a number between 1 and 5.");
+                continue;
+            }
+        }
+
+        System.out.print("Add another customization (Y/N)? ");
+        String more = scanner.nextLine();
+        if (!more.equalsIgnoreCase("Y")) {
+            break;
+        }
+    }
+
+    // Display customizations for confirmation
+    System.out.println("\nYou have added the following customizations for Dress ID: " + dressId);
+    customizations.forEach(c -> System.out.println("- " + c));
+    System.out.print("Confirm these customizations (Y/N)? ");
+    String confirm = scanner.nextLine();
+
+    if (confirm.equalsIgnoreCase("Y")) {
+        for (String customization : customizations) {
+            // Save each customization to the file
+            com.fashion.weddingdressrental.DressCustomization.Customization newCustomization =
+            new com.fashion.weddingdressrental.DressCustomization.Customization(
+                generateCustomizationId(), customerId, dressId, customization, 50.00, "Pending"
+            );
+            CustomizationManager.saveCustomization(newCustomization);
+        }
+        System.out.println("Customizations saved successfully!");
+    } else {
+        System.out.println("Customizations discarded.");
+    }
+}
+
+private static String generateCustomizationId() {
+    return "CUST-" + (int) (Math.random() * 10000);
+}
 
     private static void updateDressStatus() {
         System.out.print("Enter Dress ID to update: ");
