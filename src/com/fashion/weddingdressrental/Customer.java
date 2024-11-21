@@ -10,18 +10,22 @@ public class Customer {
     private double storeCredit;
     private int storePoints;
     private String size;
+    private String email;  // New field for customer email
     private List<AlterationRequest> alterationRequests;
     private List<Reservation> reservations;
     private Account account;
+    private List<Email> sentEmails;  // New list to store sent emails
 
-    public Customer(String customerId, String name, double storeCredit, int storePoints, String size) {
+    public Customer(String customerId, String name, double storeCredit, int storePoints, String size, String email) {
         this.customerId = customerId;
         this.name = name;
         this.storeCredit = storeCredit;
         this.storePoints = storePoints;
         this.size = size;
+        this.email = email;  // Initialize email
         this.alterationRequests = new ArrayList<>();
         this.reservations = new ArrayList<>();
+        this.sentEmails = new ArrayList<>();  // Initialize sent emails list
     }
 
     public String getCustomerId() {
@@ -60,6 +64,14 @@ public class Customer {
         this.size = size;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public List<AlterationRequest> getAlterationRequests() {
         return alterationRequests;
     }
@@ -69,8 +81,7 @@ public class Customer {
     }
 
     public void addReservation(Reservation reservation) {
-        reservations.add(reservation);  // Just add the reservation to the list
-        // Do not save reservations immediately here.
+        reservations.add(reservation);
     }
 
     public Account getAccount() {
@@ -81,9 +92,19 @@ public class Customer {
         this.account = account;
     }
 
+    // Method to add sent email to the customer's sentEmails list
+    public void addSentEmail(Email email) {
+        sentEmails.add(email);
+    }
+
+    // Getter for sent emails list
+    public List<Email> getSentEmails() {
+        return sentEmails;
+    }
+
     public boolean deductFromAccount(double amount) {
         if (account != null && account.hasSufficientFunds(amount)) {
-            account.deductBalance(amount, customerId); // Pass customerId to deductBalance
+            account.deductBalance(amount, customerId);
             return true;
         } else if (account == null) {
             System.out.println("No account found for customer " + name);
@@ -122,7 +143,6 @@ public class Customer {
         }
         if (deductFromAccount(amount)) {
             System.out.println("Gift card purchased successfully for customer " + name + " with amount $" + amount);
-            // Optionally save this transaction or take further action
             return true;
         }
         return false;
@@ -131,6 +151,6 @@ public class Customer {
     @Override
     public String toString() {
         return "Customer ID: " + customerId + ", Name: " + name + ", Store Credit: $" + storeCredit + 
-               ", Store Points: " + storePoints + ", Preferred Size: " + size;
+               ", Store Points: " + storePoints + ", Preferred Size: " + size + ", Email: " + email;
     }
 }

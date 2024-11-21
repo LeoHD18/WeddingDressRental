@@ -21,6 +21,8 @@ public class Main {
     private static final CandidateManager candidateManager = new CandidateManager();
     private static final EmployeeManager employeeManager = new EmployeeManager();
     private static final HR hr = new HR(candidateManager, employeeManager);
+    private static final MarketingDepartment marketingDepartment = new MarketingDepartment(customerManager);
+
 
     public static void main(String[] args) {
         System.out.println("Welcome to the Wedding Dress Rental System!");
@@ -30,6 +32,7 @@ public class Main {
             System.out.println("1. Employee");
             System.out.println("2. Customer");
             System.out.println("3. HR");
+            System.out.println("4. Marketing");
             System.out.println("0. Exit");
             System.out.print("Choose your role: ");
             int roleChoice = scanner.nextInt();
@@ -39,10 +42,37 @@ public class Main {
                 case 1 -> employeeMenu();
                 case 2 -> customerMenu();
                 case 3 -> HRMenu();
+                case 4 -> marketingMenu();
                 case 0 -> {
                     System.out.println("Exiting system. Goodbye!");
                     return;
                 }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+    private static void marketingMenu() {
+        while (true) {
+            System.out.println("\n--- Marketing Department Menu ---");
+            System.out.println("1. Send Out Email Newsletter to Promote Special Offers");
+            System.out.println("2. Collaborate with Advertising Team to Promote Brand");
+            System.out.println("3. Gather and Curate Customer Reviews/Testimonials");
+            System.out.println("4. Send Promotional Offers to New Customers");
+            System.out.println("5. Analyze Marketing Campaign Effectiveness");
+            System.out.println("6. Collaborate on Marketing Strategy with Store Manager");
+            System.out.println("0. Go Back to Role Selection");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+
+            switch (choice) {
+                case 1 -> marketingDepartment.sendEmailNewsletter();
+                case 2 -> marketingDepartment.collaborateWithAdvertisingTeam();
+                case 3 -> marketingDepartment.gatherCustomerReviews();
+               // case 4 -> marketingDepartment.sendPromotionalOffersToNewCustomers();
+                case 5 -> marketingDepartment.analyzeCampaignEffectiveness();
+                //case 6 -> marketingDepartment.collaborateOnMarketingStrategyWithStoreManager();
+                case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
         }
@@ -162,8 +192,9 @@ public class Main {
             System.out.println("\n--- Customer Menu ---");
             System.out.println("1. Request Dress Alteration");
             System.out.println("2. Make a Dress Reservation");
-            System.out.println("3. Customize a Dress"); // New Option
+            System.out.println("3. Customize a Dress");
             System.out.println("4. View Account Details");
+            System.out.println("5. View Sent Emails");  // Added option
             System.out.println("0. Go Back to Role Selection");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -172,13 +203,38 @@ public class Main {
             switch (choice) {
                 case 1 -> requestDressAlteration();
                 case 2 -> makeDressReservation();
-                case 3 -> customizeDress(); // Call the new method
+                case 3 -> customizeDress();
                 case 4 -> viewAccountDetails();
+                case 5 -> viewSentEmails();  // Handle the new option
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
         }
     }
+
+    private static void viewSentEmails() {
+        System.out.print("Enter your Customer ID: ");
+        String customerId = scanner.nextLine();
+        Customer customer = customerManager.findCustomerById(customerId);
+
+        if (customer == null) {
+            System.out.println("Customer ID not found. Please contact an employee to register.");
+            return;
+        }
+
+        System.out.println("\n--- Sent Emails ---");
+        if (customer.getSentEmails().isEmpty()) {
+            System.out.println("No emails have been sent to you yet.");
+        } else {
+            for (Email email : customer.getSentEmails()) {
+                System.out.println("Subject: " + email.getSubject());
+                System.out.println("Body: " + email.getBody());
+                System.out.println("Offer: " + email.getOffer());
+                System.out.println("---");
+            }
+        }
+    }
+
 
     //ADDED
     private static void customizeDress() {
@@ -388,6 +444,8 @@ private static String generateCustomizationId() {
         System.out.print("Enter Customer ID: ");
         String customerId = scanner.nextLine();
         Customer customer = customerManager.findCustomerById(customerId);
+        Employee employee = employeeManager.getAllEmployees().stream().findFirst().orElse(null);
+
 
         if (customer == null) {
             System.out.println("Customer not found.");

@@ -13,7 +13,6 @@ public class CustomerManager {
         customers = new HashMap<>();
         this.accountManager = accountManager;
         loadCustomersFromFile();
-        
     }
 
     private void loadCustomersFromFile() {
@@ -21,26 +20,36 @@ public class CustomerManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 6) {
+                if (parts.length == 7) {  // Updated length for email
                     String customerId = parts[0];
                     String name = parts[1];
                     double storeCredit = Double.parseDouble(parts[2]);
                     int storePoints = Integer.parseInt(parts[3]);
                     double accountBalance = Double.parseDouble(parts[4]);
                     String preferredSize = parts[5];
+                    String email = parts[6];  // Email from the file
 
-                    Customer customer = new Customer(customerId, name, storeCredit, storePoints, preferredSize);
-                    // Attempt to find the account associated with the customerId
+                    // Create the customer object
+                    Customer customer = new Customer(customerId, name, storeCredit, storePoints, preferredSize, email);
+
+                    // Load associated account
                     Account account = accountManager.findAccountByCustomerId(customerId);
                     if (account != null) {
                         customer.setAccount(account);
                     } else {
-                        // If no account is found, initialize an account with zero balance
                         account = new Account(0.0, customerId);
                         customer.setAccount(account);
-                        accountManager.addOrUpdateAccount(customerId, account); // Save new account to file
+                        accountManager.addOrUpdateAccount(customerId, account);
                     }
+
+                    // Add the customer to the customers map
                     customers.put(customerId, customer);
+
+                    // Load emails for the customer (assuming this method is defined)
+                    loadEmailsForCustomer(customer);
+
+                    // Debug: Print the customer with the number of emails loaded
+                    System.out.println("Loaded customer " + customer.getCustomerId() + " with " + customer.getSentEmails().size() + " sent emails.");
                 }
             }
             System.out.println("Customers loaded successfully.");
@@ -57,7 +66,8 @@ public class CustomerManager {
                              customer.getStoreCredit() + "," +
                              customer.getStorePoints() + "," +
                              (customer.getAccount() != null ? customer.getAccount().getBalance() : 0.0) + "," +
-                             (customer.getSize() != null ? customer.getSize() : ""));
+                             customer.getSize() + "," +
+                             customer.getEmail()); // Save email
                 writer.newLine();
             }
             System.out.println("Customers saved successfully.");
@@ -79,4 +89,33 @@ public class CustomerManager {
         System.out.println("\n--- Customers ---");
         customers.forEach((id, customer) -> System.out.println(customer));
     }
+
+    public Map<String, Customer> getAllCustomers() {
+        return customers; // Return the map of all customers
+    }
+    
+    private void loadEmailsForCustomer(Customer customer) {
+        String emailFile = "emails.txt";  // Email file to read from
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(emailFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] emailParts = line.split(",");
+                if (emailParts.length > 3 && emailParts[0].equals(customer.getCustomerId())) {
+                    String subject = emailParts[1];
+                    String body = emailParts[2];
+                    String offer = emailParts[3];
+                    Email email = new Email(subject, body, offer);
+                    customer.addSentEmail(email); // Add the email to the customer's sentEmails list
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error loading emails: " + e.getMessage());
+        }
+
+        // Debug print statement to show the number of emails loaded for this customer
+        System.out.println("Loaded customer " + customer.getCustomerId() + " with " + customer.getSentEmails().size() + " sent emails.");
+    }
+
+
 }

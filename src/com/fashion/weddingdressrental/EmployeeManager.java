@@ -1,8 +1,11 @@
 package com.fashion.weddingdressrental;
 
 import java.io.*;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.fashion.weddingdressrental.DressCustomization.Customization;
 
 public class EmployeeManager {
     private static final String FILE_PATH = "employees.txt";
@@ -58,4 +61,9 @@ public class EmployeeManager {
         System.out.println("\n--- Employee List ---");
         employees.values().forEach(System.out::println);
     }
+
+	public Collection<Customization> getAllEmployees() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
