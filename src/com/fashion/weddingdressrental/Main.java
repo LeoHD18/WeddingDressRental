@@ -709,7 +709,7 @@ private static String generateCustomizationId() {
         System.out.print("Enter Candidate ID: ");
         String candidateId = scanner.nextLine();
     
-        System.out.print("Enter Interview Time (e.g., 2024-12-01 10:00 AM): ");
+        System.out.print("Enter Interview Time: ");
         String time = scanner.nextLine();
     
         System.out.print("Enter Interview Location: ");
