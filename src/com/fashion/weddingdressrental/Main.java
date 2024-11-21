@@ -18,7 +18,6 @@ public class Main {
     private static final AccountManager accountManager = new AccountManager();
     private static final CustomerManager customerManager = new CustomerManager(accountManager);
     private static final InventoryManager inventoryManager = new InventoryManager();
-    private static final Employee employee = new Employee("123","John","Ames",2000);
     private static final CandidateManager candidateManager = new CandidateManager();
     private static final EmployeeManager employeeManager = new EmployeeManager();
     private static final HR hr = new HR(candidateManager, employeeManager);
@@ -753,12 +752,15 @@ private static String generateCustomizationId() {
     
         System.out.print("Enter Salary: ");
         double salary = scanner.nextDouble();
-        scanner.nextLine(); // Consume newline
+        scanner.nextLine(); 
     
         System.out.print("Enter Location: ");
         String location = scanner.nextLine();
     
-        hr.hireCandidate(candidateId, salary, location);
+        System.out.print("Enter Role: ");
+        String role = scanner.nextLine();
+    
+        hr.hireCandidate(candidateId, salary, location, role);
     }
 
     private static void addCandidate() {

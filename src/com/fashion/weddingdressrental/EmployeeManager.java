@@ -19,13 +19,14 @@ public class EmployeeManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 4) {
+                if (parts.length == 5) {
                     String employeeId = parts[0];
                     String name = parts[1];
                     String location = parts[2];
                     double salary = Double.parseDouble(parts[3]);
+                    String role = parts[4];
 
-                    Employee employee = new Employee(employeeId, name, location, salary);
+                    Employee employee = new Employee(employeeId, name, location, salary, role);
                     employees.put(employeeId, employee);
                 }
             }
