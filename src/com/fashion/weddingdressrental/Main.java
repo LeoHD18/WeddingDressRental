@@ -20,6 +20,7 @@ public class Main {
     private static final InventoryManager inventoryManager = new InventoryManager();
     private static final CandidateManager candidateManager = new CandidateManager();
     private static final EmployeeManager employeeManager = new EmployeeManager();
+    private static final Employee employee = new Employee("123","John","Ames",65000,"Sale");
     private static final HR hr = new HR(candidateManager, employeeManager);
 
     public static void main(String[] args) {
