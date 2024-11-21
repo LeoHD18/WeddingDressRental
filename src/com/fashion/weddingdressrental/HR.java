@@ -1,5 +1,9 @@
 package com.fashion.weddingdressrental;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class HR {
     private CandidateManager candidateManager;
     private EmployeeManager employeeManager;
