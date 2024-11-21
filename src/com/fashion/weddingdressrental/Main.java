@@ -78,10 +78,33 @@ public class Main {
                 case 8 -> customerManager.displayCustomers();
                 case 9 -> confirmReservationMenu();
                 case 10 -> processCustomizationRequests(); // Call the method for processing customizations
+                case 11 -> viewFeedback();
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
         }
+    }
+
+    //ADDED
+    private static void viewFeedback() {
+        System.out.print("Enter Dress ID to view feedback (or press Enter to view all): ");
+        String dressId = scanner.nextLine();
+    
+        List<Feedback> feedbackList = FeedbackManager.loadFeedback();
+        List<Feedback> filteredFeedback = dressId.isEmpty() ?
+            feedbackList :
+            feedbackList.stream().filter(fb -> fb.getDressId().equals(dressId)).toList();
+    
+        if (filteredFeedback.isEmpty()) {
+            System.out.println("No feedback found.");
+        } else {
+            System.out.println("--- Customer Feedback ---");
+            filteredFeedback.forEach(fb -> System.out.println(fb));
+        }
+    }
+    
+    private static String generateFeedbackId() {
+        return "FB-" + (int) (Math.random() * 10000);
     }
 
     //ADDED
@@ -175,10 +198,62 @@ public class Main {
                 case 2 -> makeDressReservation();
                 case 3 -> customizeDress(); // Call the new method
                 case 4 -> viewAccountDetails();
+                case 5 -> rateAndLeaveFeedback();
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
         }
+    }
+
+    //ADDED
+    private static void rateAndLeaveFeedback() {
+        System.out.print("Enter your Customer ID: ");
+        String customerId = scanner.nextLine();
+        Customer customer = customerManager.findCustomerById(customerId);
+    
+        if (customer == null) {
+            System.out.println("Customer ID not found.");
+            return;
+        }
+    
+        System.out.print("Enter Reservation ID: ");
+        String reservationId = scanner.nextLine();
+    
+        // Validate reservation (if applicable)
+        if (!ReservationManager.isReservationCompleted(reservationId)) {
+            System.out.println("Reservation is not completed or invalid.");
+            return;
+        }
+    
+        System.out.print("Enter your rating (1-5): ");
+        int rating;
+        try {
+            rating = scanner.nextInt();
+            scanner.nextLine(); // consume newline
+            if (rating < 1 || rating > 5) {
+                System.out.println("Invalid rating. Please provide a rating between 1 and 5.");
+                return;
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Rating must be a number between 1 and 5.");
+            scanner.nextLine(); // Clear invalid input
+            return;
+        }
+    
+        System.out.print("Enter your feedback (optional): ");
+        String feedback = scanner.nextLine();
+    
+        Feedback newFeedback = new Feedback(
+            generateFeedbackId(),
+            customerId,
+            reservationId,
+            rating,
+            feedback,
+            new Date()
+        );
+        FeedbackManager.saveFeedback(newFeedback);
+    
+        System.out.println("Thank you for your feedback!");
     }
 
     //ADDED

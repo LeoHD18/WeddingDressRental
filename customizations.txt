@@ -1,2 +1,5 @@
 CUST-1764,CUST-337,D-005,Embroidery: floral pattern,50.0,Approved
-CUST-6758,CUST-337,D-005,Color: pink,50.0,Pending
+CUST-6758,CUST-337,D-005,Color: pink,50.0,Approved
+CUST-2823,CUST-337,D-005,Embroidery: floral,50.0,Approved
+CUST-3043,CUST-337,D-005,Embroidery: floral,50.0,Pending
+CUST-2218,CUST-337,D-005,Color: pink,50.0,Pending

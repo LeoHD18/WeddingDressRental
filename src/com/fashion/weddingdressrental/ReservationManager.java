@@ -41,6 +41,13 @@ public class ReservationManager {
         return reservations;
     }
 
+    //ADDED
+    public static boolean isReservationCompleted(String reservationId) {
+        List<Reservation> reservations = loadReservationsFromFile();
+        return reservations.stream()
+            .anyMatch(res -> res.getReservationID().equals(reservationId) && res.getStatus().equals("Completed"));
+    }
+    
     // Save the updated reservations list to the file
     public static void saveReservationsToFile(List<Reservation> reservations) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
