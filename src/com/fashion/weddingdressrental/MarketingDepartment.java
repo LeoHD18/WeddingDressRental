@@ -1,6 +1,9 @@
 package com.fashion.weddingdressrental;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
@@ -122,9 +125,25 @@ public class MarketingDepartment {
         return "PROMO-" + (int) (Math.random() * 10000);  // Generate a random 4-digit Promo ID
     }
 
-    // Helper method to save promotion to the file
+    void loadPromotionsFromFile() {
+        String promotionFile = "promotions.txt";
+
+        File file = new File(promotionFile);
+        if (!file.exists()) {
+            try {
+                if (file.createNewFile()) {
+                    System.out.println("Promotions file created: " + promotionFile);
+                }
+            } catch (IOException e) {
+                System.out.println("Error creating promotions file: " + e.getMessage());
+            }
+        }
+    }
+
     private void savePromotionToFile(Promotion promotion) {
-        String promotionFile = "promotions.txt";  // File where promotions are saved
+        String promotionFile = "promotions.txt";
+        loadPromotionsFromFile(); // Ensure the file exists
+        System.out.println("Attempting to save promotion to file: " + promotionFile);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(promotionFile, true))) {
             writer.write("Promo ID: " + promotion.getPromoId());
@@ -138,10 +157,24 @@ public class MarketingDepartment {
             writer.write("--- End of Promotion ---");
             writer.newLine();
             writer.newLine();  // Add a blank line between promotions
+            System.out.println("Promotion saved successfully to file: " + promotionFile);
         } catch (IOException e) {
             System.out.println("Error saving promotion to file: " + e.getMessage());
         }
     }
-   
-   
+
+    public void displayPromotions() {
+        String promotionFile = "promotions.txt";
+        System.out.println("\n--- Promotions ---");
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(promotionFile))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading promotions file: " + e.getMessage());
+        }
+    }
+
 }

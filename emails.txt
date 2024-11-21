@@ -1,0 +1,9 @@
+CUST-330,hahshs,jjjjj,20
+CUST-29,hahshs,jjjjj,20
+CUST-337,hahshs,jjjjj,20
+CUST-330,a,a,a
+CUST-29,a,a,a
+CUST-337,a,a,a
+CUST-330,sjsj,djdj,jdj
+CUST-29,sjsj,djdj,jdj
+CUST-337,sjsj,djdj,jdj

@@ -1,0 +1,30 @@
+Promo ID: PROMO-6722
+Promo Details: summersale
+Discount Percentage: 20.0%
+Target Audience: young adults
+--- End of Promotion ---
+
+Promo ID: PROMO-2994
+Promo Details: SummerSalw
+Discount Percentage: 20.0%
+Target Audience: yu
+--- End of Promotion ---
+
+Promo ID: PROMO-8479
+Promo Details: hh
+Discount Percentage: 30.0%
+Target Audience: hggh
+--- End of Promotion ---
+
+Promo ID: PROMO-4911
+Promo Details: shsh
+Discount Percentage: 20.0%
+Target Audience: hshs
+--- End of Promotion ---
+
+Promo ID: PROMO-9808
+Promo Details: djdjd
+Discount Percentage: 50.0%
+Target Audience: jfjfj
+--- End of Promotion ---
+
