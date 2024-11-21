@@ -41,6 +41,17 @@ public class ReservationManager {
         return reservations;
     }
 
+    //ADDED
+    // Ensure this method accepts CustomerManager and InventoryManager
+    public static Reservation findReservationById(String reservationId, CustomerManager customerManager, InventoryManager inventoryManager) {
+        List<Reservation> reservations = loadReservationsFromFile(customerManager, inventoryManager); // Load reservations
+        return reservations.stream()
+            .filter(reservation -> reservation.getReservationID().equals(reservationId))
+            .findFirst()
+            .orElse(null); // Return the matching reservation or null if not found
+    }
+
+
     // Save the updated reservations list to the file
     public static void saveReservationsToFile(List<Reservation> reservations) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
@@ -57,27 +68,17 @@ public class ReservationManager {
     // Update reservation status in the file (this will only save the specific reservation)
     public static void updateReservationStatus(String reservationId, String newStatus, List<Reservation> reservations) {
         boolean updated = false;
-        List<String> updatedLines = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 6 && parts[0].equals(reservationId)) {
-                    parts[5] = newStatus;  // Update the status field
-                    line = String.join(",", parts); // Create the updated line
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
+            for (Reservation reservation : reservations) {
+                if (reservation.getReservationID().equals(reservationId)) {
+                    reservation.setStatus(newStatus); // Update the status in memory
                     updated = true;
                 }
-                updatedLines.add(line);
+                writer.write(reservation.toCSV()); // Write the reservation to the file
+                writer.newLine();
             }
-
+    
             if (updated) {
-                // Write all lines back to the file
-                try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
-                    for (String updatedLine : updatedLines) {
-                        writer.write(updatedLine);
-                        writer.newLine();
-                    }
-                }
                 System.out.println("Reservation " + reservationId + " status updated to " + newStatus + ".");
             } else {
                 System.out.println("Reservation ID not found.");

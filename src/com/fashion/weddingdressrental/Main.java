@@ -1,7 +1,10 @@
 package com.fashion.weddingdressrental;
 
+import com.fashion.weddingdressrental.CandidateManager;
 import com.fashion.weddingdressrental.DressCustomization.Customization;
 import com.fashion.weddingdressrental.DressCustomization.CustomizationManager;
+import com.fashion.weddingdressrental.Feedback.Feedback;
+import com.fashion.weddingdressrental.Feedback.FeedbackManager;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -62,6 +65,7 @@ public class Main {
             System.out.println("8. View All Customers");
             System.out.println("9. Confirm Reservation");
             System.out.println("10. Process Customization Requests"); // New option
+            System.out.println("11. Handle Customer Feedback");
             System.out.println("0. Go Back to Role Selection");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -78,9 +82,31 @@ public class Main {
                 case 8 -> customerManager.displayCustomers();
                 case 9 -> confirmReservationMenu();
                 case 10 -> processCustomizationRequests(); // Call the method for processing customizations
+                case 11 -> viewFeedback();
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
+        }
+    }
+
+    //ADDED
+    private static void viewFeedback() {
+        System.out.print("Enter Dress ID to view feedback (or press Enter to view all): ");
+        String dressId = scanner.nextLine();
+    
+        // Load all feedback
+        List<Feedback> feedbackList = FeedbackManager.loadFeedback();
+    
+        // Filter feedback by dress ID if provided
+        List<Feedback> filteredFeedback = feedbackList.stream()
+                .filter(fb -> dressId.isEmpty() || fb.getDressId().equals(dressId))
+                .toList();
+    
+        if (filteredFeedback.isEmpty()) {
+            System.out.println("No feedback found.");
+        } else {
+            System.out.println("--- Customer Feedback ---");
+            filteredFeedback.forEach(System.out::println);
         }
     }
 
@@ -128,34 +154,29 @@ public class Main {
 
     private static void confirmReservationMenu() {
         List<Reservation> allReservations = ReservationManager.loadReservationsFromFile(customerManager, inventoryManager);
-
+    
         if (allReservations.isEmpty()) {
             System.out.println("No pending reservations found.");
             return;
         }
-
+    
         System.out.print("Enter the Reservation ID to confirm: ");
         String reservationId = scanner.nextLine();
-
+    
         Reservation reservationToConfirm = allReservations.stream()
                 .filter(reservation -> reservation.getReservationID().equals(reservationId))
                 .findFirst()
                 .orElse(null);
-
+    
         if (reservationToConfirm == null) {
             System.out.println("Reservation ID not found.");
             return;
         }
-
-        reservationToConfirm.setStatus("Confirmed");
-        InventoryItem dress = reservationToConfirm.getDress();
-        
-
-        ReservationManager.saveReservationsToFile(allReservations);
-        inventoryManager.saveInventoryToFile();
-
+    
+        reservationToConfirm.setStatus("Confirmed"); // Update status in memory
+        ReservationManager.updateReservationStatus(reservationId, "Confirmed", allReservations); // Save to file
+    
         System.out.println("Reservation " + reservationId + " confirmed successfully.");
-        
     }
 
     private static void customerMenu() {
@@ -165,6 +186,7 @@ public class Main {
             System.out.println("2. Make a Dress Reservation");
             System.out.println("3. Customize a Dress"); // New Option
             System.out.println("4. View Account Details");
+            System.out.println("5. Submit/View Feedback");
             System.out.println("0. Go Back to Role Selection");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -175,10 +197,81 @@ public class Main {
                 case 2 -> makeDressReservation();
                 case 3 -> customizeDress(); // Call the new method
                 case 4 -> viewAccountDetails();
+                case 5 -> rateAndLeaveFeedback();
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
         }
+    }
+
+    //ADDED
+    private static void rateAndLeaveFeedback() {
+        System.out.print("Enter your Customer ID: ");
+        String customerId = scanner.nextLine();
+        Customer customer = customerManager.findCustomerById(customerId);
+    
+        if (customer == null) {
+            System.out.println("Customer ID not found.");
+            return;
+        }
+    
+        System.out.print("Enter Reservation ID: ");
+        String reservationId = scanner.nextLine();
+    
+        // Validate reservation and retrieve Dress ID
+        Reservation reservation = ReservationManager.findReservationById(reservationId, customerManager, inventoryManager);
+        if (reservation == null) {
+            System.out.println("Reservation not found. Please check your Reservation ID.");
+            return;
+        }
+    
+        // Check if the reservation is not "Completed" or "Confirmed"
+        if (!"Completed".equals(reservation.getStatus()) && !"Confirmed".equals(reservation.getStatus())) {
+            System.out.printf(
+                "Feedback cannot be submitted. The reservation for Dress ID %s is currently '%s'. "
+                + "Feedback can only be given for reservations that are 'Confirmed' or 'Completed'.%n",
+                reservation.getDress().getDressId(),
+                reservation.getStatus()
+            );
+            return;
+        }
+    
+        String dressId = reservation.getDress().getDressId(); // Get Dress ID from the reservation
+    
+        System.out.print("Enter your rating (1-5): ");
+        int rating;
+        try {
+            rating = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+            if (rating < 1 || rating > 5) {
+                System.out.println("Invalid rating. Please provide a rating between 1 and 5.");
+                return;
+            }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Rating must be a number between 1 and 5.");
+            scanner.nextLine(); // Clear invalid input
+            return;
+        }
+    
+        System.out.print("Enter your feedback (optional): ");
+        String feedback = scanner.nextLine();
+    
+        Feedback newFeedback = new Feedback(
+            generateFeedbackId(),
+            customerId,
+            reservationId,
+            dressId, // Pass Dress ID here
+            rating,
+            feedback,
+            new Date()
+        );
+        FeedbackManager.saveFeedback(newFeedback);
+    
+        System.out.println("Thank you for your feedback!");
+    }
+
+    private static String generateFeedbackId() {
+        return "FB-" + (int) (Math.random() * 10000);
     }
 
     //ADDED
@@ -548,6 +641,10 @@ private static String generateCustomizationId() {
         return false;
     }
 
+    private static String generateUniqueReservationID() {
+        return "RES-" + System.currentTimeMillis(); // Using the current timestamp
+    }
+
     private static void makeDressReservation() {
         System.out.print("Enter your Customer ID: ");
         String customerId = scanner.nextLine();
@@ -575,10 +672,11 @@ private static String generateCustomizationId() {
         double dressPrice = 10.00;
 
         if (customer.getAccount() != null && customer.getAccount().hasSufficientFunds(dressPrice)) {
-            customer.getAccount().deductBalance(dressPrice,customerId);
-            
+            customer.getAccount().deductBalance(dressPrice, customerId);
+
             accountManager.addOrUpdateAccount(customerId, customer.getAccount());
-            Reservation reservation = new Reservation("RES-" + customerId, customer, dress, new Date(), new Date());
+            String uniqueReservationId = generateUniqueReservationID(); // Generate a unique ID
+            Reservation reservation = new Reservation(uniqueReservationId, customer, dress, new Date(), new Date());
             customer.addReservation(reservation);
 
             List<Reservation> allReservations = ReservationManager.loadReservationsFromFile(customerManager, inventoryManager);
