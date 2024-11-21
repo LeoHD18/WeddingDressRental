@@ -22,7 +22,9 @@ public class FeedbackManager {
             String line;
             while ((line = reader.readLine()) != null) {
                 Feedback feedback = Feedback.fromCSV(line);
-                if (feedback != null) feedbackList.add(feedback);
+                if (feedback != null) {
+                    feedbackList.add(feedback);
+                }
             }
         } catch (IOException e) {
             System.out.println("Error loading feedback: " + e.getMessage());
