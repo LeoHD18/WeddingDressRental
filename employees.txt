@@ -1,1 +1,2 @@
-EMP-8333,Nguyen,Ames,80000.0
+EMP-2731,Nguyen,Ames,70000.0,SE Dev
+EMP-6767,Niharika,Ames,80000.0,Manager

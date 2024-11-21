@@ -60,6 +60,11 @@ public class CandidateManager {
         return candidates.get(candidateId);
     }
 
+    public void removeCandidate(String candidateId) {
+        candidates.remove(candidateId);
+        saveCandidatesToFile();
+    }
+
     public void displayCandidates() {
         System.out.println("\n--- Candidate List ---");
         candidates.values().forEach(System.out::println);
