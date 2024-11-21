@@ -5,12 +5,14 @@ public class Employee {
     private String name;
     private String location;
     private double salary;
+    private String role;
 
-    public Employee(String employeeId, String name, String location, double salary) {
+    public Employee(String employeeId, String name, String location, double salary, String role) {
         this.employeeId = employeeId;
         this.name = name;
         this.location = location;
         this.salary = salary;
+        this.role = role;
     }
 
     // Getters and Setters
@@ -34,6 +36,14 @@ public class Employee {
         this.salary = salary;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "Employee{" +
@@ -41,11 +51,11 @@ public class Employee {
                ", Name='" + name + '\'' +
                ", Location='" + location + '\'' +
                ", Salary=$" + salary +
+               ", Role='" + role + '\'' +
                '}';
     }
 
     public String toCSV() {
-        return employeeId + "," + name + "," + location + "," + salary;
+        return employeeId + "," + name + "," + location + "," + salary + "," + role;
     }
-
 }
