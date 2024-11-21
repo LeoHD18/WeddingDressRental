@@ -1,0 +1,4 @@
+Candidate ID: CAND-6660, Name: Nguyen, Time: 2024 10:00AM, Location: Ames
+Candidate ID: CAND-3758, Name: Varun, Time: 11/21 10 AM, Location: Ames
+Candidate ID: CAND-3758, Name: Varun, Time: 10 AM, Location: Ames
+Candidate ID: CAND-8752, Name: Huy, Time: 10:00 AM, Location: Des Moines

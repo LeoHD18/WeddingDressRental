@@ -18,7 +18,10 @@ public class Main {
     private static final AccountManager accountManager = new AccountManager();
     private static final CustomerManager customerManager = new CustomerManager(accountManager);
     private static final InventoryManager inventoryManager = new InventoryManager();
-    private static final Employee employee = new Employee("John");
+    private static final CandidateManager candidateManager = new CandidateManager();
+    private static final EmployeeManager employeeManager = new EmployeeManager();
+    private static final Employee employee = new Employee("123","John","Ames",65000,"Sale");
+    private static final HR hr = new HR(candidateManager, employeeManager);
 
     public static void main(String[] args) {
         System.out.println("Welcome to the Wedding Dress Rental System!");
@@ -27,6 +30,7 @@ public class Main {
             System.out.println("\n--- Select Role ---");
             System.out.println("1. Employee");
             System.out.println("2. Customer");
+            System.out.println("3. HR");
             System.out.println("0. Exit");
             System.out.print("Choose your role: ");
             int roleChoice = scanner.nextInt();
@@ -35,6 +39,7 @@ public class Main {
             switch (roleChoice) {
                 case 1 -> employeeMenu();
                 case 2 -> customerMenu();
+                case 3 -> HRMenu();
                 case 0 -> {
                     System.out.println("Exiting system. Goodbye!");
                     return;
@@ -640,5 +645,79 @@ private static String generateCustomizationId() {
             System.out.println("No bank account linked.");
         }
         System.out.println("Preferred Size: " + (customer.getSize() != null ? customer.getSize() : "Not specified"));
+    }
+
+    private static void HRMenu() {
+        while (true) {
+            System.out.println("\n--- HR Menu ---");
+            System.out.println("1. Add Candidate");
+            System.out.println("2. View Candidates");
+            System.out.println("3. Assign Interview");
+            System.out.println("4. Hire Candidate");
+            System.out.println("5. View Employees");
+            System.out.println("0. Exit HR Menu");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+    
+            switch (choice) {
+                case 1 -> addCandidate();
+                case 2 -> candidateManager.displayCandidates();
+                case 3 -> assignInterview();
+                case 4 -> hireCandidate();
+                case 5 -> employeeManager.displayEmployees();
+                case 0 -> { return; }
+                default -> System.out.println("Invalid option. Try again.");
+            }
+        }
+    }
+    
+    private static void hireCandidate() {
+        System.out.print("Enter Candidate ID: ");
+        String candidateId = scanner.nextLine();
+    
+        System.out.print("Enter Salary: ");
+        double salary = scanner.nextDouble();
+        scanner.nextLine(); 
+    
+        System.out.print("Enter Location: ");
+        String location = scanner.nextLine();
+    
+        System.out.print("Enter Role: ");
+        String role = scanner.nextLine();
+    
+        hr.hireCandidate(candidateId, salary, location, role);
+    }
+
+    private static void addCandidate() {
+        System.out.print("Enter Candidate Name: ");
+        String name = scanner.nextLine();
+    
+        System.out.print("Enter Candidate Email: ");
+        String email = scanner.nextLine();
+    
+        System.out.print("Enter Candidate Phone: ");
+        String phone = scanner.nextLine();
+    
+        System.out.print("Enter Resume (File Path or Description): ");
+        String resume = scanner.nextLine();
+    
+        String candidateId = "CAND-" + (int) (Math.random() * 10000);
+        Candidate candidate = new Candidate(candidateId, name, email, phone, resume);
+        candidateManager.addCandidate(candidate);
+        System.out.println("Candidate added successfully.");
+    }
+    
+    private static void assignInterview() {
+        System.out.print("Enter Candidate ID: ");
+        String candidateId = scanner.nextLine();
+    
+        System.out.print("Enter Interview Time: ");
+        String time = scanner.nextLine();
+    
+        System.out.print("Enter Interview Location: ");
+        String location = scanner.nextLine();
+    
+        hr.assignInterview(candidateId, time, location);
     }
 }
