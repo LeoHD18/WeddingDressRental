@@ -7,3 +7,9 @@ CUST-337,a,a,a
 CUST-330,sjsj,djdj,jdj
 CUST-29,sjsj,djdj,jdj
 CUST-337,sjsj,djdj,jdj
+CUST-330,0,0,0
+CUST-29,0,0,0
+CUST-337,0,0,0
+CUST-330,hello,good,30
+CUST-29,hello,good,30
+CUST-337,hello,good,30
