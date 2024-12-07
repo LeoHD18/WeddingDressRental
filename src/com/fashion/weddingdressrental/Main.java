@@ -1,6 +1,5 @@
 package com.fashion.weddingdressrental;
 
-import com.fashion.weddingdressrental.CandidateManager;
 import com.fashion.weddingdressrental.DressCustomization.Customization;
 import com.fashion.weddingdressrental.DressCustomization.CustomizationManager;
 import com.fashion.weddingdressrental.Feedback.Feedback;
@@ -14,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
@@ -39,6 +39,7 @@ public class Main {
             System.out.println("3. HR");
             System.out.println("4. Marketing");
             System.out.println("5. Advertising");
+            System.out.println("6. Models");
             System.out.println("0. Exit");
             System.out.print("Choose your role: ");
             int roleChoice = scanner.nextInt();
@@ -50,6 +51,7 @@ public class Main {
                 case 3 -> HRMenu();
                 case 4 -> marketingMenu();
                 case 5 -> advertisingMenu();
+                case 6 -> eventMenu();
                 case 0 -> {
                     System.out.println("Exiting system. Goodbye!");
                     return;
@@ -918,4 +920,85 @@ private static String generateCustomizationId() {
     
         hr.assignInterview(candidateId, time, location);
     }
+
+    private static void eventMenu() {
+    while (true) {
+        System.out.println("\n--- Models Management Menu ---");
+        System.out.println("1. Hire Model");
+        System.out.println("2. View Hired Models");
+        System.out.println("0. Go Back to Role Selection");
+        System.out.print("Choose an option: ");
+        int choice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        switch (choice) {
+            case 1 -> hireModel();
+            case 2 -> ModelManager.viewHiredModels(); // Call to view hired models
+            case 0 -> { return; }
+            default -> System.out.println("Invalid option. Please try again.");
+        }
+    }
+}
+
+private static void hireModel() {
+    ModelManager.loadModels(); // Ensure models are loaded into the map
+    while (true) {
+        System.out.println("\n--- Available Models ---");
+        ModelManager.displayAllModels();
+
+        System.out.print("\nEnter Model ID to hire (or enter 0 to go back): ");
+        String modelId = scanner.nextLine();
+        // Check if the user wants to go back
+        if (modelId.equals("0")) {
+            System.out.println("Returning to the Event Management Menu...");
+            return;
+        }
+        Model selectedModel = ModelManager.findModelById(modelId);
+
+        if (selectedModel == null) {
+            System.out.println("Invalid Model ID. Please try again.");
+            continue;
+        }
+
+        if (ModelManager.isModelHired(modelId)) {
+            System.out.println("This model has already been hired. Please select a different model.");
+            continue;
+        }
+
+        System.out.print("Enter a note for the model's agent: ");
+        String note = scanner.nextLine();
+
+        // Random outcomes
+        Random random = new Random();
+        int outcome = random.nextInt(4);
+        switch (outcome) {
+            case 0 -> {
+                System.out.println(selectedModel.getName() + "'s agent accepts the offer.");
+                ModelManager.saveHiredModel(selectedModel, note);
+                return;
+            }
+            case 1 -> {
+                System.out.println(selectedModel.getName() + "'s agent accepts the offer.");
+                ModelManager.saveHiredModel(selectedModel, note);
+                return;
+            }
+            case 2 -> {
+                System.out.println(selectedModel.getName() + " does not want to work with our company.");
+                continue;
+            }
+            case 3 -> {
+                double newPrice = selectedModel.getPricePerDay() * 1.1;
+                System.out.printf("%s wants more money ($%.2f/day). Do you accept? (Y/N): ", selectedModel.getName(), newPrice);
+                String response = scanner.nextLine();
+                if (response.equalsIgnoreCase("Y")) {
+                    ModelManager.saveHiredModel(selectedModel, note);
+                    System.out.println("Model hired at the new rate.");
+                    return;
+                } else {
+                    System.out.println("Offer declined.");
+                }
+            }
+        }
+    }
+}
 }
