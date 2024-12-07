@@ -1,0 +1,4 @@
+PS-1733557400818,M-015,EMP-7140,D-001,Ames,10:00 AM,portrait,romantic,RAW,promotion,studio,4K,4K,2000.0
+PS-1733558197820,M-001,EMP-7140,D-001,Ames,10:00 Am,studio,romatic,RAW,promotion,natural,Digital,4K,80000.0
+PS-1733558449923,M-001;M-015,EMP-7140,D-001,a,a,a,a,a,a,a,a,a,20.0
+PS-1733558951912,M-001;M-015,EMP-7140,D-001;D-008,a,a,a,a,a,a,a,a,a,40.0

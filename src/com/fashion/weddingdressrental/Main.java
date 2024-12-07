@@ -11,8 +11,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -23,6 +25,7 @@ public class Main {
     private static final InventoryManager inventoryManager = new InventoryManager();
     private static final CandidateManager candidateManager = new CandidateManager();
     private static final EmployeeManager employeeManager = new EmployeeManager();
+    private static final ModelManager modelManager = new ModelManager();
     private static final Employee employee = new Employee("123","John","Ames",65000,"Sale");
     private static final HR hr = new HR(candidateManager, employeeManager);
     private static final AdvertisingDepartment advertisingDepartment = new AdvertisingDepartment();
@@ -926,6 +929,7 @@ private static String generateCustomizationId() {
         System.out.println("\n--- Models Management Menu ---");
         System.out.println("1. Hire Model");
         System.out.println("2. View Hired Models");
+        System.out.println("3. Set Up Photoshoot");
         System.out.println("0. Go Back to Role Selection");
         System.out.print("Choose an option: ");
         int choice = scanner.nextInt();
@@ -933,7 +937,8 @@ private static String generateCustomizationId() {
 
         switch (choice) {
             case 1 -> hireModel();
-            case 2 -> ModelManager.viewHiredModels(); // Call to view hired models
+            case 2 -> modelManager.viewHiredModels(); // Call to view hired models
+            case 3 -> setUpPhotoshoot(); // Call to set up a photoshoot
             case 0 -> { return; }
             default -> System.out.println("Invalid option. Please try again.");
         }
@@ -941,7 +946,6 @@ private static String generateCustomizationId() {
 }
 
 private static void hireModel() {
-    ModelManager.loadModels(); // Ensure models are loaded into the map
     while (true) {
         System.out.println("\n--- Available Models ---");
         ModelManager.displayAllModels();
@@ -1000,5 +1004,152 @@ private static void hireModel() {
             }
         }
     }
+}
+
+private static void setUpPhotoshoot() {
+    // Load hired models
+    Map<String, Model> hiredModels = modelManager.getHiredModels();
+
+    if (hiredModels.isEmpty()) {
+        System.out.println("No hired models available for photoshoot.");
+        return;
+    }
+
+    List<Model> chosenModels = new ArrayList<>();
+    boolean chooseAnotherModel;
+
+    // Select models
+    do {
+        System.out.println("\n--- Hired Models ---");
+        int index = 1;
+        Map<Integer, String> indexToModelId = new HashMap<>();
+        for (String modelId : hiredModels.keySet()) {
+            System.out.printf("%d. %s\n", index, hiredModels.get(modelId));
+            indexToModelId.put(index, modelId);
+            index++;
+        }
+
+        System.out.print("\nChoose a model by number (or 0 to finish): ");
+        int modelChoice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        if (modelChoice == 0) {
+            break;
+        }
+
+        if (indexToModelId.containsKey(modelChoice)) {
+            String chosenModelId = indexToModelId.get(modelChoice);
+            Model chosenModel = hiredModels.get(chosenModelId);
+            if (chosenModels.contains(chosenModel)) {
+                System.out.println("This model has already been chosen.");
+            } else {
+                chosenModels.add(chosenModel);
+                System.out.println("Model added to the photoshoot.");
+            }
+        } else {
+            System.out.println("Invalid choice. Please try again.");
+        }
+
+        System.out.print("Do you want to choose another model? (Y/N): ");
+        String response = scanner.nextLine().trim().toUpperCase();
+        chooseAnotherModel = response.equals("Y");
+
+    } while (chooseAnotherModel);
+
+    if (chosenModels.isEmpty()) {
+        System.out.println("No models selected. Returning to menu.");
+        return;
+    }
+
+    // Select photographer
+    List<Employee> photographers = new ArrayList<>();
+    for (Employee employee : employeeManager.getEmployeeMap().values()) {
+        if (employee.getRole().equalsIgnoreCase("Photographer")) {
+            photographers.add(employee);
+        }
+    }
+
+    if (photographers.isEmpty()) {
+        System.out.println("No photographers available.");
+        return;
+    }
+
+    System.out.println("\n--- Photographers ---");
+    for (int i = 0; i < photographers.size(); i++) {
+        System.out.printf("%d. %s\n", i + 1, photographers.get(i));
+    }
+    System.out.print("\nChoose a photographer by number: ");
+    int photographerChoice = scanner.nextInt();
+    scanner.nextLine(); // Consume newline
+    Employee chosenPhotographer = photographers.get(photographerChoice - 1);
+
+    // Select dresses
+    List<InventoryItem> availableDresses = inventoryManager.getAvailableDresses();
+    List<InventoryItem> chosenDresses = new ArrayList<>();
+    boolean chooseAnotherDress;
+
+    do {
+        System.out.println("\n--- Available Dresses ---");
+        for (int i = 0; i < availableDresses.size(); i++) {
+            System.out.printf("%d. %s\n", i + 1, availableDresses.get(i));
+        }
+        System.out.print("\nChoose a dress by number: ");
+        int dressChoice = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        if (dressChoice > 0 && dressChoice <= availableDresses.size()) {
+            InventoryItem chosenDress = availableDresses.get(dressChoice - 1);
+            if (chosenDresses.contains(chosenDress)) {
+                System.out.println("This dress has already been chosen.");
+            } else {
+                chosenDresses.add(chosenDress);
+                System.out.println("Dress added to the photoshoot.");
+            }
+        } else {
+            System.out.println("Invalid choice. Please try again.");
+        }
+
+        System.out.print("Do you want to choose another dress? (Y/N): ");
+        String response = scanner.nextLine().trim().toUpperCase();
+        chooseAnotherDress = response.equals("Y");
+
+    } while (chooseAnotherDress);
+
+    if (chosenDresses.isEmpty()) {
+        System.out.println("No dresses selected. Returning to menu.");
+        return;
+    }
+
+    // Collect other details
+    System.out.print("Enter location: ");
+    String location = scanner.nextLine();
+    System.out.print("Enter time: ");
+    String time = scanner.nextLine();
+    System.out.print("Enter style (e.g., portrait, landscape, candid): ");
+    String style = scanner.nextLine();
+    System.out.print("Enter mood (e.g., formal, casual, sport, romantic): ");
+    String mood = scanner.nextLine();
+    System.out.print("Enter output format (e.g., JPEG, RAW): ");
+    String output = scanner.nextLine();
+    System.out.print("Enter purpose: ");
+    String purpose = scanner.nextLine();
+    System.out.print("Enter lighting setup (e.g., natural, ring light, box light, studio light): ");
+    String lightingSetup = scanner.nextLine();
+    System.out.print("Enter camera settings (e.g. DSLR, Digital): ");
+    String cameraSettings = scanner.nextLine();
+    System.out.print("Enter resolution (e.g., 1080p, 2K, 4K): ");
+    String resolution = scanner.nextLine();
+    System.out.print("Enter cost: ");
+    double cost = scanner.nextDouble();
+    scanner.nextLine(); // Consume newline
+
+    // Create photoshoot
+    String photoshootId = PhotoshootManager.generatePhotoshootId();
+    Photoshoot photoshoot = new Photoshoot(photoshootId, chosenModels, chosenPhotographer, chosenDresses,
+            location, time, style, mood, output, purpose, lightingSetup, cameraSettings, resolution, cost);
+
+    // Save photoshoot
+    PhotoshootManager.savePhotoshoot(photoshoot);
+    System.out.println("Photoshoot created and saved successfully.");
 }
 }

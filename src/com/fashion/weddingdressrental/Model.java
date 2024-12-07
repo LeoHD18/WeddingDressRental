@@ -94,7 +94,7 @@ public class Model {
 
     @Override
     public String toString() {
-        return String.format("ID: %s | Name: %s | Age: %d | Gender: %s | Nationality: %s | Height: %.2f | Weight: %.2f | Bust: %.2f | Waist: %.2f | Hips: %.2f | DressSize: %s | Experience: %d years | Skills: %s | Price/Day: $%.2f",
+        return String.format("%s | Name: %s | Age: %d | Gender: %s | Nationality: %s | Height: %.2f | Weight: %.2f | Bust: %.2f | Waist: %.2f | Hips: %.2f | DressSize: %s | Experience: %d years | Skills: %s | Price/Day: $%.2f",
                 id, name, age, gender, nationality, height, weight, bust, waist, hips, dressSize, experienceYears, skills, pricePerDay);
     }
 }
