@@ -114,4 +114,22 @@ public class HR {
 
         System.out.println("Candidate " + candidate.getName() + " has been hired as Employee ID: " + employeeId);
     }
+
+    // Display all interviews from the file
+    public void displayAllInterviews() {
+        System.out.println("=== Scheduled Interviews ===");
+        try (BufferedReader reader = new BufferedReader(new FileReader(INTERVIEW_FILE))) {
+            String line;
+            boolean hasInterviews = false;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                hasInterviews = true;
+            }
+            if (!hasInterviews) {
+                System.out.println("No interviews found.");
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading interview file: " + e.getMessage());
+        }
+    }
 }

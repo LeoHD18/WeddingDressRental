@@ -851,6 +851,7 @@ private static String generateCustomizationId() {
             System.out.println("3. Assign Interview");
             System.out.println("4. Hire Candidate");
             System.out.println("5. View Employees");
+            System.out.println("6. View all interviews");
             System.out.println("0. Exit HR Menu");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -862,6 +863,7 @@ private static String generateCustomizationId() {
                 case 3 -> assignInterview();
                 case 4 -> hireCandidate();
                 case 5 -> employeeManager.displayEmployees();
+                case 6 -> hr.displayAllInterviews();
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Try again.");
             }
@@ -908,7 +910,7 @@ private static String generateCustomizationId() {
         System.out.print("Enter Candidate ID: ");
         String candidateId = scanner.nextLine();
     
-        System.out.print("Enter Interview Time: ");
+        System.out.print("Enter Interview Time (Time,MM/DD/YY): ");
         String time = scanner.nextLine();
     
         System.out.print("Enter Interview Location: ");

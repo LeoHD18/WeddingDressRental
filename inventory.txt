@@ -2,4 +2,4 @@ D-004,Rented,10.0
 D-003,Rented,180.0
 D-002,Rented,200.0
 D-001,Available,10.0
-D-005,Available,10.0
+D-005,ll,10.0

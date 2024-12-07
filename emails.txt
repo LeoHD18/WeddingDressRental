@@ -13,3 +13,17 @@ CUST-337,0,0,0
 CUST-330,hello,good,30
 CUST-29,hello,good,30
 CUST-337,hello,good,30
+CUST-330,La,La,10
+CUST-29,La,La,10
+CUST-337,La,La,10
+CUST-330,Black friday deals,discount on kid's clothes,50
+CUST-29,Black friday deals,discount on kid's clothes,50
+CUST-337,Black friday deals,discount on kid's clothes,50
+CUST-330,hello from chanel,This is just a test,55
+CUST-29,hello from chanel,This is just a test,55
+CUST-337,hello from chanel,This is just a test,55
+CUST-953,hello from chanel,This is just a test,55
+CUST-330,ee,ee,50
+CUST-29,ee,ee,50
+CUST-337,ee,ee,50
+CUST-953,ee,ee,50

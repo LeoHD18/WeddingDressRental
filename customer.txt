@@ -1,3 +1,4 @@
 CUST-330,Nguyen,0.0,0,230.0,S,poke@gmail.com1
 CUST-29,Nguyen,0.0,0,100.0,S,poke@gmail.com2
 CUST-337,Nguyen,0.0,0,90.0,S,poke@gmail.com13
+CUST-953,varun,0.0,0,0.0,S,yvarun7@iastate.edu

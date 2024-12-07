@@ -8,3 +8,5 @@ PROMO-26,Approved
 PROMO-3056,Rejected
 PROMO-2068,Approved
 PROMO-1068,Approved
+PROMO-3815,Approved
+PROMO-3243,Approved

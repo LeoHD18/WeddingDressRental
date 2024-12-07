@@ -6,3 +6,5 @@ PROMO-26,dhdh,30.0,dhdh
 PROMO-3056,rr,3.0,fdhfh
 PROMO-1068,dhdhd,60.0,young adults
 PROMO-2068,djdjd,99.0,younf
+PROMO-3815,Summer Sale,50.0,Adults
+PROMO-3243,Winter Sale,30.0,adults
