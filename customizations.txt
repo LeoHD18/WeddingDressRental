@@ -5,3 +5,9 @@ CUST-3043,CUST-337,D-005,Embroidery: floral,50.0,Approved
 CUST-2218,CUST-337,D-005,Color: pink,50.0,Pending
 CUST-370,CUST-330,D-001,Embroidery: initials "N",50.0,Approved
 CUST-6182,CUST-330,D-001,Color: blue,50.0,Pending
+CUST-3880,CUST-337,D-005,Embroidery: floral pattern,50.0,Approved
+CUST-3169,CUST-337,D-005,Color: pink,50.0,Approved
+CUST-3509,CUST-337,D-005,Embroidery: initials N,50.0,Approved
+CUST-7319,CUST-337,D-005,Color: blue,50.0,Approved
+CUST-3055,CUST-337,D-005,Embroidery: initials N,50.0,Approved
+CUST-9553,CUST-337,D-005,Color: pink,50.0,Approved

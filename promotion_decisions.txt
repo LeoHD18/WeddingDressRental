@@ -1,0 +1,12 @@
+PROMO-9928,Approved
+PROMO-7527,Approved
+PROMO-7532,Approved
+PROMO-1277,Approved
+PROMO-7856,Approved
+PROMO-2550,Approved
+PROMO-26,Approved
+PROMO-3056,Rejected
+PROMO-2068,Approved
+PROMO-1068,Approved
+PROMO-3815,Approved
+PROMO-3243,Approved

@@ -25,7 +25,8 @@ public class Main {
     private static final EmployeeManager employeeManager = new EmployeeManager();
     private static final Employee employee = new Employee("123","John","Ames",65000,"Sale");
     private static final HR hr = new HR(candidateManager, employeeManager);
-    private static final MarketingDepartment marketingDepartment = new MarketingDepartment(customerManager);
+    private static final AdvertisingDepartment advertisingDepartment = new AdvertisingDepartment();
+    private static final MarketingDepartment marketingDepartment = new MarketingDepartment(customerManager,advertisingDepartment);
 
 
     public static void main(String[] args) {
@@ -37,6 +38,7 @@ public class Main {
             System.out.println("2. Customer");
             System.out.println("3. HR");
             System.out.println("4. Marketing");
+            System.out.println("5. Advertising");
             System.out.println("0. Exit");
             System.out.print("Choose your role: ");
             int roleChoice = scanner.nextInt();
@@ -47,6 +49,7 @@ public class Main {
                 case 2 -> customerMenu();
                 case 3 -> HRMenu();
                 case 4 -> marketingMenu();
+                case 5 -> advertisingMenu();
                 case 0 -> {
                     System.out.println("Exiting system. Goodbye!");
                     return;
@@ -56,32 +59,51 @@ public class Main {
         }
     }
 
-    private static void marketingMenu() {
+    private static void advertisingMenu() {
         while (true) {
-            System.out.println("\n--- Marketing Department Menu ---");
-            System.out.println("1. Send Out Email Newsletter to Promote Special Offers");
-            System.out.println("2. Collaborate with Advertising Team to Promote Brand");
-            System.out.println("3. Gather and Curate Customer Reviews/Testimonials");
-            System.out.println("4. Send Promotional Offers to New Customers");
-            System.out.println("5. Analyze Marketing Campaign Effectiveness");
-            System.out.println("6. Collaborate on Marketing Strategy with Store Manager");
+            System.out.println("\n--- Advertising Department Menu ---");
+            System.out.println("1. Review Promotions");
             System.out.println("0. Go Back to Role Selection");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1 -> advertisingDepartment.reviewPromotionsInteractive(); 
+                case 0 -> { return; } // Exit the advertising menu
+                default -> System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    
+
+
+    private static void marketingMenu() {
+        while (true) {
+            System.out.println("\n--- Marketing Department Menu ---");
+            System.out.println("1. Send Email Newsletter");
+            System.out.println("2. Create a Promotion");
+            System.out.println("3. View Pending Promotions");
+            System.out.println("4. View Advertising Decisions");
+            System.out.println("0. Go Back to Role Selection");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
 
             switch (choice) {
                 case 1 -> marketingDepartment.sendEmailNewsletter();
-                case 2 -> marketingDepartment.collaborateWithAdvertisingTeam();
-                case 3 -> marketingDepartment.gatherCustomerReviews();
-               // case 4 -> marketingDepartment.sendPromotionalOffersToNewCustomers();
-                case 5 -> marketingDepartment.analyzeCampaignEffectiveness();
-                //case 6 -> marketingDepartment.collaborateOnMarketingStrategyWithStoreManager();
+                case 2 -> marketingDepartment.createPromotion();
+                case 3 -> marketingDepartment.viewPendingPromotions();
+                case 4 -> marketingDepartment.viewAdvertisingDecisions();
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
         }
     }
+
+
+    
     private static void employeeMenu() {
         while (true) {
             System.out.println("\n--- Employee Menu ---");
@@ -139,6 +161,7 @@ public class Main {
             filteredFeedback.forEach(System.out::println);
         }
     }
+    
 
     //ADDED
     private static void processCustomizationRequests() {
@@ -828,6 +851,7 @@ private static String generateCustomizationId() {
             System.out.println("3. Assign Interview");
             System.out.println("4. Hire Candidate");
             System.out.println("5. View Employees");
+            System.out.println("6. View all interviews");
             System.out.println("0. Exit HR Menu");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -839,6 +863,7 @@ private static String generateCustomizationId() {
                 case 3 -> assignInterview();
                 case 4 -> hireCandidate();
                 case 5 -> employeeManager.displayEmployees();
+                case 6 -> hr.displayAllInterviews();
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Try again.");
             }
@@ -885,7 +910,7 @@ private static String generateCustomizationId() {
         System.out.print("Enter Candidate ID: ");
         String candidateId = scanner.nextLine();
     
-        System.out.print("Enter Interview Time: ");
+        System.out.print("Enter Interview Time (Time,MM/DD/YY): ");
         String time = scanner.nextLine();
     
         System.out.print("Enter Interview Location: ");

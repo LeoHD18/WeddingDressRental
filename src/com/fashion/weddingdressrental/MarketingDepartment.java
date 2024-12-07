@@ -1,11 +1,7 @@
 package com.fashion.weddingdressrental;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.List;
 import java.util.Scanner;
 
 public class MarketingDepartment {
@@ -13,16 +9,14 @@ public class MarketingDepartment {
     private final Email emailSystem;
     private final CampaignMetrics campaignMetrics;
     private final CustomerReviewManager customerReviewManager;
-    private final AdvertisingTeam advertisingTeam; 
+    private final AdvertisingDepartment advertisingDepartment;
 
-    public MarketingDepartment(CustomerManager customerManager) {
+    public MarketingDepartment(CustomerManager customerManager, AdvertisingDepartment advertisingDepartment) {
         this.customerManager = customerManager;
         this.emailSystem = new Email();
         this.campaignMetrics = new CampaignMetrics();
         this.customerReviewManager = new CustomerReviewManager();
-//        this.advertisingTeam = advertisingTeam;
-		this.advertisingTeam = null;
-        
+        this.advertisingDepartment = advertisingDepartment;
     }
 
     // Method to send email newsletters
@@ -45,12 +39,9 @@ public class MarketingDepartment {
             saveEmailToFile(email, customer); // Save the email to file
         }
 
-        // Track the campaign metrics
-        campaignMetrics.trackCampaign(email);
+       
         System.out.println("Email newsletter sent successfully!");
     }
-
- 
 
     private void saveEmailToFile(Email email, Customer customer) {
         String emailFile = "emails.txt";  // Specify the file where emails will be saved
@@ -65,116 +56,86 @@ public class MarketingDepartment {
             System.out.println("Error saving email to file: " + e.getMessage());
         }
     }
+    
+    public void viewAdvertisingDecisions() {
+        String decisionFile = "promotion_decisions.txt";
+        File file = new File(decisionFile);
 
-    // Method to analyze the effectiveness of a campaign
-    public void analyzeCampaignEffectiveness() {
-        System.out.println("Analyzing Campaign Effectiveness...");
-        campaignMetrics.analyzeMetrics();
-    }
-
-    // Method to gather and save customer reviews
-    public void gatherCustomerReviews() {
-        System.out.println("Gathering Customer Reviews...");
-
-        // Loop over customers to get their reviews
-        for (Customer customer : customerManager.getAllCustomers().values()) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.print("Enter review for " + customer.getName() + ": ");
-            String reviewContent = scanner.nextLine();
-            System.out.print("Enter rating (1-5): ");
-            int rating = scanner.nextInt();
-            scanner.nextLine();  // consume newline
-
-            // Create a review and save it
-            CustomerReview review = new CustomerReview(customer, reviewContent, rating);
-            customerReviewManager.saveReview(review);
+        if (!file.exists()) {
+            System.out.println("No decisions have been made by the Advertising Department yet.");
+            return;
         }
 
-        System.out.println("Customer reviews gathered successfully!");
+        System.out.println("\n--- Advertising Department Decisions ---");
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 2) {
+                    System.out.println("Promotion ID: " + parts[0]);
+                    System.out.println("Decision: " + parts[1]);
+                    System.out.println("---");
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading decisions file: " + e.getMessage());
+        }
     }
-    
-    public void collaborateWithAdvertisingTeam() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Collaborating to create a promotion...");
 
-        // Generate random Promotion ID
+
+    // Create a new promotion
+    public void createPromotion() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n--- Create a New Promotion ---");
         String promoId = generatePromotionId();
         System.out.println("Generated Promotion ID: " + promoId);
 
-        // Get promotion details from the user
-        System.out.print("Enter the Promotion Details (e.g., Summer Sale, Christmas Offer): ");
+        System.out.print("Enter Promotion Details (e.g., Summer Sale): ");
         String promoDetails = scanner.nextLine();
-        System.out.print("Enter the Discount Percentage (e.g., 20 for 20%): ");
+        System.out.print("Enter Discount Percentage (e.g., 20): ");
         double discountPercentage = scanner.nextDouble();
-        scanner.nextLine();  // Consume newline
-        System.out.print("Enter the Target Audience (e.g., Young Adults, Bride-to-Be): ");
+        scanner.nextLine(); // Consume newline
+        System.out.print("Enter Target Audience (e.g., Young Adults): ");
         String targetAudience = scanner.nextLine();
 
-        // Create a promotion object (for internal processing)
+        // Create and save the promotion
         Promotion promotion = new Promotion(promoId, promoDetails, discountPercentage, targetAudience);
-
-        // Save the promotion to a file
         savePromotionToFile(promotion);
 
-        // Display success message
-        System.out.println("Promotion created and saved successfully!");
+        System.out.println("Promotion created successfully and sent for review!");
     }
 
-    // Helper method to generate random Promotion ID
-    private String generatePromotionId() {
-        return "PROMO-" + (int) (Math.random() * 10000);  // Generate a random 4-digit Promo ID
-    }
+    // View pending promotions not yet reviewed by Advertising
+    public void viewPendingPromotions() {
+        List<Promotion> pendingPromotions = advertisingDepartment.getPendingPromotions();
 
-    void loadPromotionsFromFile() {
-        String promotionFile = "promotions.txt";
-
-        File file = new File(promotionFile);
-        if (!file.exists()) {
-            try {
-                if (file.createNewFile()) {
-                    System.out.println("Promotions file created: " + promotionFile);
-                }
-            } catch (IOException e) {
-                System.out.println("Error creating promotions file: " + e.getMessage());
+        if (pendingPromotions.isEmpty()) {
+            System.out.println("No pending promotions to review.");
+        } else {
+            System.out.println("\n--- Pending Promotions ---");
+            for (Promotion promotion : pendingPromotions) {
+                System.out.println("Promo ID: " + promotion.getPromoId());
+                System.out.println("Details: " + promotion.getPromoDetails());
+                System.out.println("Discount: " + promotion.getDiscountPercentage() + "%");
+                System.out.println("Target Audience: " + promotion.getTargetAudience());
+                System.out.println("---");
             }
         }
+    }
+
+    private String generatePromotionId() {
+        return "PROMO-" + (int) (Math.random() * 10000);
     }
 
     private void savePromotionToFile(Promotion promotion) {
         String promotionFile = "promotions.txt";
-        loadPromotionsFromFile(); // Ensure the file exists
-        System.out.println("Attempting to save promotion to file: " + promotionFile);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(promotionFile, true))) {
-            writer.write("Promo ID: " + promotion.getPromoId());
+            writer.write(promotion.getPromoId() + "," + promotion.getPromoDetails() + "," +
+                    promotion.getDiscountPercentage() + "," + promotion.getTargetAudience());
             writer.newLine();
-            writer.write("Promo Details: " + promotion.getPromoDetails());
-            writer.newLine();
-            writer.write("Discount Percentage: " + promotion.getDiscountPercentage() + "%");
-            writer.newLine();
-            writer.write("Target Audience: " + promotion.getTargetAudience());
-            writer.newLine();
-            writer.write("--- End of Promotion ---");
-            writer.newLine();
-            writer.newLine();  // Add a blank line between promotions
-            System.out.println("Promotion saved successfully to file: " + promotionFile);
         } catch (IOException e) {
-            System.out.println("Error saving promotion to file: " + e.getMessage());
+            System.out.println("Error saving promotion: " + e.getMessage());
         }
     }
-
-    public void displayPromotions() {
-        String promotionFile = "promotions.txt";
-        System.out.println("\n--- Promotions ---");
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(promotionFile))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading promotions file: " + e.getMessage());
-        }
-    }
-
 }
