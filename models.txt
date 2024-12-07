@@ -1,0 +1,15 @@
+M-001,Gigi Hadid,28,Female,American,179,57,Blue,Blonde,86,61,89,S,Runway,10,Fair,2000
+M-002,Bella Hadid,26,Female,American,175,55,Green,Brown,85,60,87,S,Catwalk,8,Olive,2200
+M-003,Adut Akech,23,Female,South Sudanese,178,56,Brown,Black,80,58,86,S,Runway,5,Dark,2500
+M-004,Kaia Gerber,22,Female,American,177,54,Brown,Brown,82,60,86,S,Catwalk,6,Fair,2300
+M-005,Liu Wen,35,Female,Chinese,179,57,Brown,Black,84,60,88,S,Runway,12,Olive,2700
+M-006,Candice Swanepoel,35,Female,South African,177,54,Blue,Blonde,88,59,89,S,Runway,15,Fair,2500
+M-007,Winnie Harlow,30,Female,Canadian,175,55,Brown,Black,84,61,89,S,Runway,8,Vitiligo,2400
+M-008,Irina Shayk,38,Female,Russian,178,58,Green,Brown,89,61,89,S,Catwalk,15,Fair,3000
+M-009,David Gandy,43,Male,British,188,78,Blue,Dark Brown,0,0,0,L,Commercial,20,Light,3200
+M-010,Joan Smalls,36,Female,Puerto Rican,179,57,Brown,Brown,84,60,89,S,Runway,12,Olive,2600
+M-011,Tyson Beckford,53,Male,American,183,80,Brown,Black,0,0,0,L,Commercial,25,Dark,2800
+M-012,Karlie Kloss,31,Female,American,188,58,Blue,Blonde,85,60,88,S,Runway,12,Fair,2700
+M-013,Ashley Graham,36,Female,American,175,85,Brown,Brown,102,76,114,L,Commercial,10,Olive,2400
+M-014,Naomi Campbell,54,Female,British,177,56,Brown,Black,84,60,89,S,Runway,30,Dark,4000
+M-015,Alton Mason,25,Male,American,185,74,Brown,Black,0,0,0,M,Runway,7,Dark,2500
