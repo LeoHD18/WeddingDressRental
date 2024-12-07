@@ -58,4 +58,8 @@ public class EmployeeManager {
         System.out.println("\n--- Employee List ---");
         employees.values().forEach(System.out::println);
     }
+
+    public Map<String, Employee> getEmployeeMap() {
+        return employees;
+    }
 }

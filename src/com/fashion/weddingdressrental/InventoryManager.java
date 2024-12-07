@@ -1,7 +1,9 @@
 package com.fashion.weddingdressrental;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class InventoryManager {
@@ -89,5 +91,20 @@ public class InventoryManager {
     public void displayInventory() {
         System.out.println("\n--- Inventory ---");
         inventory.forEach((id, item) -> System.out.println(item));
+    }
+
+     /**
+     * Retrieves a list of all available dresses from the inventory.
+     *
+     * @return A list of inventory items with status "Available."
+     */
+    public List<InventoryItem> getAvailableDresses() {
+        List<InventoryItem> availableDresses = new ArrayList<>();
+        for (InventoryItem item : inventory.values()) {
+            if ("Available".equalsIgnoreCase(item.getStatus())) {
+                availableDresses.add(item);
+            }
+        }
+        return availableDresses;
     }
 }
