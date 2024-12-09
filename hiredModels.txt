@@ -1,2 +1,3 @@
 M-015 | Name: Alton Mason | Age: 25 | Gender: Male | Nationality: American | Height: 185.00 | Weight: 74.00 | Bust: 0.00 | Waist: 0.00 | Hips: 0.00 | DressSize: M | Experience: 7 years | Skills: Runway | Price/Day: $2500.00 | Note: Please be ontime
 M-001 | Name: Gigi Hadid | Age: 28 | Gender: Female | Nationality: American | Height: 179.00 | Weight: 57.00 | Bust: 86.00 | Waist: 61.00 | Hips: 89.00 | DressSize: S | Experience: 10 years | Skills: Runway | Price/Day: $2000.00 | Note: Ok
+M-005 | Name: Liu Wen | Age: 35 | Gender: Female | Nationality: Chinese | Height: 179.00 | Weight: 57.00 | Bust: 84.00 | Waist: 60.00 | Hips: 88.00 | DressSize: S | Experience: 12 years | Skills: Runway | Price/Day: $2700.00 | Note: Please be ontime

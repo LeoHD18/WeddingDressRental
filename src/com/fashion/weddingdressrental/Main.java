@@ -28,6 +28,7 @@ public class Main {
     private static final TrainingManager trainingManager = new TrainingManager(); // Initialize trainingManager first
     private static final EmployeeManager employeeManager = new EmployeeManager(trainingManager); // Now this works
     private static final ModelManager modelManager = new ModelManager();
+    private static final PhotoshootManager photoshootManager = new PhotoshootManager();
     private static final Employee employee = new Employee("123","John","Ames",65000,"Sale");
     private static final AdvertisingDepartment advertisingDepartment = new AdvertisingDepartment();
     private static final MarketingDepartment marketingDepartment = new MarketingDepartment(customerManager,advertisingDepartment);
@@ -999,12 +1000,16 @@ private static String generateCustomizationId() {
         hr.assignInterview(candidateId, time, location);
     }
 
+    /**
+     * Method to display all Event Manager menu
+     */
     private static void eventMenu() {
     while (true) {
         System.out.println("\n--- Models Management Menu ---");
         System.out.println("1. Hire Model");
         System.out.println("2. View Hired Models");
         System.out.println("3. Set Up Photoshoot");
+        System.out.println("4. View all photoshoot sessions");
         System.out.println("0. Go Back to Role Selection");
         System.out.print("Choose an option: ");
         int choice = scanner.nextInt();
@@ -1014,12 +1019,16 @@ private static String generateCustomizationId() {
             case 1 -> hireModel();
             case 2 -> modelManager.viewHiredModels(); // Call to view hired models
             case 3 -> setUpPhotoshoot(); // Call to set up a photoshoot
+            case 4 -> photoshootManager.displayAllPhotoshoots(); // call to display all photoshoot
             case 0 -> { return; }
             default -> System.out.println("Invalid option. Please try again.");
         }
     }
 }
 
+/**
+ * Method to hire models and store hired models info to file hiredModels.txt
+ */
 private static void hireModel() {
     while (true) {
         System.out.println("\n--- Available Models ---");
@@ -1080,7 +1089,9 @@ private static void hireModel() {
         }
     }
 }
-
+/**
+ * Method to set up a photoshoot session and store information to photoshoot.txt
+ */
 private static void setUpPhotoshoot() {
     // Load hired models
     Map<String, Model> hiredModels = modelManager.getHiredModels();
@@ -1219,12 +1230,12 @@ private static void setUpPhotoshoot() {
     scanner.nextLine(); // Consume newline
 
     // Create photoshoot
-    String photoshootId = PhotoshootManager.generatePhotoshootId();
+    String photoshootId = photoshootManager.generatePhotoshootId();
     Photoshoot photoshoot = new Photoshoot(photoshootId, chosenModels, chosenPhotographer, chosenDresses,
             location, time, style, mood, output, purpose, lightingSetup, cameraSettings, resolution, cost);
 
     // Save photoshoot
-    PhotoshootManager.savePhotoshoot(photoshoot);
+    photoshootManager.savePhotoshoot(photoshoot);
     System.out.println("Photoshoot created and saved successfully.");
 }
 }

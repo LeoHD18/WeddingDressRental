@@ -51,4 +51,26 @@ public class PhotoshootManager {
     public static String generatePhotoshootId() {
         return "PS-" + System.currentTimeMillis();
     }
+
+    /**
+     * Displays all photoshoot sessions stored in the file.
+     */
+    public static void displayAllPhotoshoots() {
+        System.out.println("\n--- All Photoshoot Sessions ---");
+        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
+            String line;
+            boolean hasPhotoshoots = false;
+
+            while ((line = reader.readLine()) != null) {
+                hasPhotoshoots = true;
+                System.out.println(line);
+            }
+
+            if (!hasPhotoshoots) {
+                System.out.println("No photoshoot sessions found.");
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading photoshoot sessions file: " + e.getMessage());
+        }
+    }
 }
