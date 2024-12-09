@@ -1053,6 +1053,33 @@ private static void hireModel() {
             continue;
         }
 
+        System.out.print("How many days will the model be required?: ");
+        int days = Integer.parseInt(scanner.nextLine());
+
+        double totalCost = selectedModel.getPricePerDay() * days;
+        System.out.printf("Total cost for hiring %s: $%.2f\n", selectedModel.getName(), totalCost);
+
+        System.out.print("Enter the start hour of the event (24-hour format): ");
+        String startHour = scanner.nextLine();
+
+        System.out.print("Enter the end hour of the event (24-hour format): ");
+        String endHour = scanner.nextLine();
+
+        System.out.print("Please enter the event type (e.g., Wedding, Fashion Show, Photoshoot): ");
+        String eventType = scanner.nextLine();
+
+        System.out.print("Please provide the location of the event: ");
+        String eventLocation = scanner.nextLine();
+
+        System.out.print("Will you be providing transportation and accommodation for the model? (Y/N): ");
+        String transportationAndAccommodation = scanner.nextLine();
+
+        System.out.print("Do you agree to the payment terms of 50% advance and 50% upon completion? (Y/N): ");
+        String paymentTermsAgreement = scanner.nextLine();
+
+        System.out.print("How would you like to be updated? (Email/Phone/Other): ");
+        String updatePreference = scanner.nextLine();
+
         System.out.print("Enter a note for the model's agent: ");
         String note = scanner.nextLine();
 
@@ -1062,12 +1089,14 @@ private static void hireModel() {
         switch (outcome) {
             case 0 -> {
                 System.out.println(selectedModel.getName() + "'s agent accepts the offer.");
-                ModelManager.saveHiredModel(selectedModel, note);
+                ModelManager.saveHiredModel(selectedModel, note, days, totalCost, startHour, endHour, eventType, eventLocation,
+                transportationAndAccommodation, paymentTermsAgreement, updatePreference);
                 return;
             }
             case 1 -> {
                 System.out.println(selectedModel.getName() + "'s agent accepts the offer.");
-                ModelManager.saveHiredModel(selectedModel, note);
+                ModelManager.saveHiredModel(selectedModel, note, days, totalCost, startHour, endHour, eventType, eventLocation,
+                transportationAndAccommodation, paymentTermsAgreement, updatePreference);
                 return;
             }
             case 2 -> {
@@ -1077,9 +1106,12 @@ private static void hireModel() {
             case 3 -> {
                 double newPrice = selectedModel.getPricePerDay() * 1.1;
                 System.out.printf("%s wants more money ($%.2f/day). Do you accept? (Y/N): ", selectedModel.getName(), newPrice);
+                totalCost = newPrice * days;
+                System.out.println("New total cost will be: " + totalCost);
                 String response = scanner.nextLine();
                 if (response.equalsIgnoreCase("Y")) {
-                    ModelManager.saveHiredModel(selectedModel, note);
+                    ModelManager.saveHiredModel(selectedModel, note, days, totalCost, startHour, endHour, eventType, eventLocation,
+                    transportationAndAccommodation, paymentTermsAgreement, updatePreference);
                     System.out.println("Model hired at the new rate.");
                     return;
                 } else {
