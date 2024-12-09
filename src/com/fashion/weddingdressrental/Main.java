@@ -24,13 +24,16 @@ public class Main {
     private static final CustomerManager customerManager = new CustomerManager(accountManager);
     private static final InventoryManager inventoryManager = new InventoryManager();
     private static final CandidateManager candidateManager = new CandidateManager();
-    private static final EmployeeManager employeeManager = new EmployeeManager();
+    // private static final EmployeeManager employeeManager = new EmployeeManager();
+    private static final TrainingManager trainingManager = new TrainingManager(); // Initialize trainingManager first
+    private static final EmployeeManager employeeManager = new EmployeeManager(trainingManager); // Now this works
     private static final ModelManager modelManager = new ModelManager();
     private static final Employee employee = new Employee("123","John","Ames",65000,"Sale");
-    private static final HR hr = new HR(candidateManager, employeeManager);
     private static final AdvertisingDepartment advertisingDepartment = new AdvertisingDepartment();
     private static final MarketingDepartment marketingDepartment = new MarketingDepartment(customerManager,advertisingDepartment);
-
+    //private static final TrainingManager trainingManager = new TrainingManager();
+    private static final HR hr = new HR(candidateManager, employeeManager, trainingManager, scanner);
+    private static final EmployeePortal employeePortal = new EmployeePortal(trainingManager, employeeManager);
 
     public static void main(String[] args) {
         System.out.println("Welcome to the Wedding Dress Rental System!");
@@ -123,6 +126,8 @@ public class Main {
             System.out.println("9. Confirm Reservation");
             System.out.println("10. Process Customization Requests"); // New option
             System.out.println("11. Handle Customer Feedback");
+            System.out.println("12. View Assigned Trainings");
+            System.out.println("13. Complete Training");
             System.out.println("0. Go Back to Role Selection");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -140,9 +145,40 @@ public class Main {
                 case 9 -> confirmReservationMenu();
                 case 10 -> processCustomizationRequests(); // Call the method for processing customizations
                 case 11 -> viewFeedback();
+                case 12 -> handleViewAssignedTrainings(); // Refactored case 12
+                case 13 -> handleCompleteTraining(); // Refactored case 13
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
+        }
+    }
+
+    //ADDED
+    private static void handleViewAssignedTrainings() {
+        System.out.print("Enter your Employee ID: ");
+        String employeeId = scanner.nextLine();
+        Employee employee = employeeManager.getEmployeeMap().get(employeeId);
+    
+        if (employee != null) {
+            employeePortal.viewAssignedTrainings(employee);
+        } else {
+            System.out.println("Invalid Employee ID. Please try again.");
+        }
+    }
+
+    //ADDED
+    private static void handleCompleteTraining() {
+        System.out.print("Enter your Employee ID: ");
+        String employeeId = scanner.nextLine();
+        Employee employee = employeeManager.getEmployeeMap().get(employeeId);
+    
+        if (employee != null) {
+            System.out.print("Enter Training ID to complete: ");
+            String trainingId = scanner.nextLine();
+            employeePortal.completeTraining(employee, trainingId);
+            employeeManager.saveEmployeesToFile(); // Save updates after completion
+        } else {
+            System.out.println("Invalid Employee ID. Please try again.");
         }
     }
 
@@ -857,6 +893,11 @@ private static String generateCustomizationId() {
             System.out.println("4. Hire Candidate");
             System.out.println("5. View Employees");
             System.out.println("6. View all interviews");
+            System.out.println("6. View All Interviews");
+            System.out.println("7. Create Training Session"); 
+            System.out.println("8. Assign Employees to Training");
+            System.out.println("9. View All Training Sessions");
+            System.out.println("10. Mark Training as Completed");
             System.out.println("0. Exit HR Menu");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -869,12 +910,46 @@ private static String generateCustomizationId() {
                 case 4 -> hireCandidate();
                 case 5 -> employeeManager.displayEmployees();
                 case 6 -> hr.displayAllInterviews();
+                case 7 -> hr.createTrainingSessionMenu();
+                case 8 -> assignEmployeesToTrainingMenu();
+                case 9 -> hr.viewAllTrainingSessions();
+                case 10 -> markTrainingAsCompletedMenu();
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Try again.");
             }
         }
     }
     
+    //ADDED
+    private static void createTrainingSessionMenu() {
+        System.out.print("Enter topic: ");
+        String topic = scanner.nextLine();
+        System.out.print("Enter trainer: ");
+        String trainer = scanner.nextLine();
+        System.out.print("Enter date (MM/DD/YYYY): ");
+        String date = scanner.nextLine();
+    
+        hr.createTrainingSessionMenu();
+    }
+    
+    private static void assignEmployeesToTrainingMenu() {
+        System.out.print("Enter Training ID: ");
+        String trainingId = scanner.nextLine();
+    
+        System.out.println("Enter Employee IDs to assign (comma-separated): ");
+        String employeeIdsInput = scanner.nextLine();
+        List<String> employeeIds = List.of(employeeIdsInput.split(","));
+    
+        hr.assignEmployeesToTraining(trainingId, employeeIds);
+    }
+    
+    private static void markTrainingAsCompletedMenu() {
+        System.out.print("Enter Training ID to mark as completed: ");
+        String trainingId = scanner.nextLine();
+        hr.markTrainingAsCompleted(trainingId);
+    }
+
+
     private static void hireCandidate() {
         System.out.print("Enter Candidate ID: ");
         String candidateId = scanner.nextLine();
