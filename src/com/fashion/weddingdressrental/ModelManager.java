@@ -2,9 +2,7 @@ package com.fashion.weddingdressrental;
 
 import java.io.*;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Handles operations related to models, such as loading, saving to files
@@ -96,13 +94,18 @@ public class ModelManager {
      * @param model the model to save
      * @param note  the note provided by the user for the model's agent
      */
-    public static void saveHiredModel(Model model, String note) {
+    public static void saveHiredModel(Model model, String note, int days, double totalCost, String startHour, String endHour,
+                                      String eventType, String eventLocation, String transportationAndAccommodation,
+                                      String paymentTermsAgreement, String updatePreference) {
         if (hiredModels.containsKey(model.getId())) {
             System.out.println("This model has already been hired.");
             return;
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(HIRED_MODELS_FILE, true))) {
-            writer.write(model.toString() + " | Note: " + note);
+            writer.write(String.format(
+                "%s | Days: %d | Total Cost: $%.2f | Start Hour: %s | End Hour: %s | Event Type: %s | Location: %s | Transport & Accommodation: %s | Payment Terms: %s | Updates via: %s | Note: %s\n",
+                model.toString(), days, totalCost, startHour, endHour, eventType, eventLocation,
+                transportationAndAccommodation, paymentTermsAgreement, updatePreference, note));
             writer.newLine();
             hiredModels.put(model.getId(), model); // Track the hired model
             System.out.println("Hired model saved successfully.");
@@ -150,12 +153,21 @@ public class ModelManager {
      * Displays all hired models currently tracked in the hiredModels map.
      */
     public static void viewHiredModels() {
-        if (hiredModels.isEmpty()) {
-            System.out.println("No models have been hired yet.");
-            return;
+        try (BufferedReader reader = new BufferedReader(new FileReader(HIRED_MODELS_FILE))) {
+            String line;
+            if ((line = reader.readLine()) == null) {
+                System.out.println("No models have been hired yet.");
+                return;
+            }
+            System.out.println("\n--- Hired Models ---");
+            do {
+                System.out.println(line);
+            } while ((line = reader.readLine()) != null);
+        } catch (FileNotFoundException e) {
+            System.out.println("Hired models file not found. No models have been hired yet.");
+        } catch (IOException e) {
+            System.out.println("Error reading hired models: " + e.getMessage());
         }
-        System.out.println("\n--- Hired Models ---");
-        hiredModels.values().forEach(model -> System.out.println(model));
     }
 
    
