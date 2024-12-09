@@ -1,3 +1,3 @@
 EMP-7140,Nguyen,Des Moines,80000.0,Photographer,
-EMP-5250,John Doe,Ames,80000.0,HR,TRAIN-6912
-EMP-439,Nguyen,Ames,80000.0,Dev,
+EMP-5250,John Doe,Ames,80000.0,HR,TRAIN-6912;TRAIN-8338
+EMP-439,Nguyen,Ames,80000.0,Dev,TRAIN-8338

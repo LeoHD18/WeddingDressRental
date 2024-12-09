@@ -1,0 +1,16 @@
+Niharika|hello|2024-12-09T01:27:07.054304|false
+Niharika|hello|2024-12-09T01:32:40.271985|false
+Support|how may I help you|2024-12-09T01:32:47.439974|true
+Niharika|hello|2024-12-09T01:34:11.621152|false
+Support|hi|2024-12-09T01:34:15.348851|true
+Niharika|i need help|2024-12-09T01:34:47.460359|false
+Support|sure|2024-12-09T01:34:51.815748|true
+Support|hello|2024-12-09T01:36:40.786145|true
+Niharika|hi|2024-12-09T01:36:46.339711|false
+Niharika|i need help|2024-12-09T01:37:00.368073|false
+Support|sure|2024-12-09T01:37:16.349334|true
+Niharika|hi|2024-12-09T01:56:52.605884|false
+Support|hi|2024-12-09T01:57:28.758026|true
+Niharika|need help|2024-12-09T01:57:36.6622|false
+Support|sure, how may i help|2024-12-09T01:57:43.295528|true
+Niharika|hi|2024-12-09T01:58:32.039415|false
