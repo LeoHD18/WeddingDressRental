@@ -202,7 +202,7 @@ public class Main {
         String email = scanner.nextLine();
         System.out.print("Enter Phone: ");
         String phone = scanner.nextLine();
-        System.out.print("Enter Product Categories (comma-separated): ");
+        System.out.print("Enter Product: ");
         String categories = scanner.nextLine();
 
         String supplierId = supplierManager.registerSupplier(companyName, email, phone, categories);

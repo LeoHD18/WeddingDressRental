@@ -193,15 +193,20 @@ public class InventoryManager {
         inventory.forEach((id, item) -> System.out.println(item));
     }
 
-    // Get Available Dresses
+    
+ // Get Available Dresses from All Stores
     public List<InventoryItem> getAvailableDresses() {
         List<InventoryItem> availableDresses = new ArrayList<>();
-        for (InventoryItem item : inventory.values()) {
-            if ("Available".equalsIgnoreCase(item.getStatus()) && item.getQuantity() > 0) {
-                availableDresses.add(item);
+
+        for (Map<String, InventoryItem> storeInventory : storeInventories.values()) {
+            for (InventoryItem item : storeInventory.values()) {
+                if ("Available".equalsIgnoreCase(item.getStatus()) && item.getQuantity() > 0) {
+                    availableDresses.add(item);
+                }
             }
         }
         return availableDresses;
     }
+
 
 }
