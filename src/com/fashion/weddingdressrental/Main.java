@@ -1107,7 +1107,7 @@ private static void hireModel() {
                 double newPrice = selectedModel.getPricePerDay() * 1.1;
                 System.out.printf("%s wants more money ($%.2f/day). Do you accept? (Y/N): ", selectedModel.getName(), newPrice);
                 totalCost = newPrice * days;
-                System.out.println("New total cost will be: " + totalCost);
+                System.out.printf("New total cost will be: $%.2f",totalCost);
                 String response = scanner.nextLine();
                 if (response.equalsIgnoreCase("Y")) {
                     ModelManager.saveHiredModel(selectedModel, note, days, totalCost, startHour, endHour, eventType, eventLocation,
