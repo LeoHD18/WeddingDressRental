@@ -1,10 +1,4 @@
-STORE-813,D-1378,Available,40.0,50
-STORE-813,D-2248,Available,7.0,60
-STORE-813,D-002,Available,40.0,45
-STORE-475,D-2248,Available,7.0,0
-STORE-475,D-7553,Available,6.0,9
-STORE-475,D-002,Available,40.0,0
-STORE-475,D-001,Available,50.0,50
-STORE-475,D-9486,Available,5.0,50
-STORE-475,D-005,available,5.0,5
-STORE-937,D-5354,Available,60.0,50
+STORE-813,D-4733,Available,5.0,3
+STORE-813,D-1992,Available,5.0,6
+STORE-475,D-4733,Available,5.0,2
+STORE-475,D-3770,Available,5.0,50

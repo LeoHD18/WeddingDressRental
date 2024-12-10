@@ -76,23 +76,32 @@ public class InventoryTransferManager {
      * @param toStoreId  The ID of the providing store
      * @param transferId The ID of the transfer request to approve
      */
-    public void approveTransfer(String toStoreId, String transferId) {
+    public void approveTransfer(String storeId, String transferId) {
         for (InventoryTransfer transfer : transfers) {
             if (transfer.getTransferId().equals(transferId)
-                && transfer.getToStoreId().equals(toStoreId)
+                && transfer.getToStoreId().equals(storeId)
                 && transfer.getStatus().equals("Pending")) {
-
-                String fromStoreId = transfer.getFromStoreId();
-                String product = transfer.getProduct();
+                
+                // Check if providing store (toStore) has enough inventory
+                String providingStoreId = transfer.getToStoreId();
+                String dressId = transfer.getProduct();
                 int quantity = transfer.getQuantity();
+                double price = transfer.getPrice();
 
-                if (!inventoryManager.deductInventory(toStoreId, product, quantity)) {
-                    System.out.println("Error: Insufficient inventory for dress ID " + product + " in store " + toStoreId);
+                // Check and deduct from providing store
+                if (!inventoryManager.deductInventory(providingStoreId, dressId, quantity)) {
+                    System.out.println("Error: Insufficient inventory in the providing store.");
                     return;
                 }
 
-                double price = transfer.getPrice();
-                inventoryManager.addInventory(fromStoreId, product, "Available", price, quantity);
+                // Add to requesting store
+                inventoryManager.addInventory(
+                    transfer.getFromStoreId(),  // Requesting store
+                    dressId,
+                    "Available",
+                    price,
+                    quantity
+                );
 
                 transfer.setStatus("Approved");
                 saveTransfersToFile();
@@ -102,6 +111,7 @@ public class InventoryTransferManager {
         }
         System.out.println("Transfer not found or already processed.");
     }
+
 
     /**
      * Rejects a pending transfer request.

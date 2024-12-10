@@ -130,7 +130,7 @@ public class Main {
             System.out.println("7. Suppliers");
             System.out.println("8. Stores");
             System.out.println("9. Inventory Transfers");
-            System.out.println("10. Inventory Menu");
+      
             System.out.println("0. Exit");
             System.out.print("Choose your role: ");
             int roleChoice = scanner.nextInt();
@@ -146,7 +146,7 @@ public class Main {
                 case 7 -> supplierMenu();
                 case 8 -> storeMenu();
                 case 9 -> inventoryTransferMenu();
-                case 10 -> inventoryMenu();
+           
                 case 0 -> {
                     System.out.println("Exiting system. Goodbye!");
                     return;
@@ -370,13 +370,22 @@ public class Main {
      */
     private static void createAgreementRequest() {
         System.out.print("Enter Supplier ID: ");
-        String supplierId = scanner.nextLine();
+        String supplierId = scanner.nextLine().trim();
 
         System.out.print("Enter Store ID: ");
-        String storeId = scanner.nextLine();
+        String storeId = scanner.nextLine().trim();
 
-        supplierManager.createAgreementRequest(supplierId, storeId);
+        String requestId = "REQ-" + (int)(Math.random() * 1000);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("agreements_requests.txt", true))) {
+            writer.write(requestId + "," + supplierId + "," + storeId + ",Pending");
+            writer.newLine();
+            System.out.println("Agreement request created successfully with Request ID: " + requestId);
+        } catch (IOException e) {
+            System.out.println("Error writing to agreement requests file: " + e.getMessage());
+        }
     }
+
 
     /**
      * Approves or rejects a supplier-store agreement request based on the request ID.
@@ -384,19 +393,54 @@ public class Main {
      */
     private static void approveOrRejectAgreementRequest() {
         System.out.print("Enter Request ID: ");
-        String requestId = scanner.nextLine();
+        String requestId = scanner.nextLine().trim();
 
         System.out.print("Approve Request? (Y/N): ");
         String decision = scanner.nextLine().trim().toUpperCase();
 
-        if ("Y".equals(decision)) {
-            supplierManager.approveAgreementRequest(requestId);
-        } else if ("N".equals(decision)) {
-            supplierManager.rejectAgreementRequest(requestId);
-        } else {
-            System.out.println("Invalid input. Please enter 'Y' or 'N'.");
+        List<String> updatedRequests = new ArrayList<>();
+        boolean found = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader("agreements_requests.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts[0].equalsIgnoreCase(requestId)) {
+                    found = true;
+                    String newStatus = decision.equals("Y") ? "Approved" : "Rejected";
+
+                    if ("Approved".equals(newStatus)) {
+                        try (BufferedWriter writer = new BufferedWriter(new FileWriter("agreements.txt", true))) {
+                            writer.write(String.join(",", parts[0], parts[1], parts[2], newStatus));
+                            writer.newLine();
+                            System.out.println("Agreement approved and saved.");
+                        }
+                    }
+                    updatedRequests.add(String.join(",", parts[0], parts[1], parts[2], newStatus));
+                } else {
+                    updatedRequests.add(line);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading agreement requests file: " + e.getMessage());
+        }
+
+        if (!found) {
+            System.out.println("Request ID not found.");
+            return;
+        }
+
+        // Rewrite updated requests back to file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("agreements_requests.txt"))) {
+            for (String request : updatedRequests) {
+                writer.write(request);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error updating agreement requests file: " + e.getMessage());
         }
     }
+
 
     /**
      * Displays all pending supplier-store agreement requests.
@@ -445,30 +489,30 @@ public class Main {
         storeManager.registerStore(storeId, storeName, location, contactInfo);
     }
 
-    /**
-     * Displays the Inventory Management Menu.
-     * Allows adding, viewing, and updating inventory records.
-     */
-    private static void inventoryMenu() {
-        while (true) {
-            System.out.println("\n--- Inventory Management ---");
-            System.out.println("1. Add New Inventory");
-            System.out.println("2. View Inventory");
-            System.out.println("3. Update Dress Status");
-            System.out.println("0. Return to Main Menu");
-            System.out.print("Choose an option: ");
-            int choice = scanner.nextInt();
-            scanner.nextLine(); 
-
-            switch (choice) {
-                case 1 -> addNewInventory();
-                case 2 -> inventoryManager.displayInventory();
-                case 3 -> updateDressStatus1();
-                case 0 -> { return; }
-                default -> System.out.println("Invalid option. Please try again.");
-            }
-        }
-    }
+//    /**
+//     * Displays the Inventory Management Menu.
+//     * Allows adding, viewing, and updating inventory records.
+//     */
+//    private static void inventoryMenu() {
+//        while (true) {
+//            System.out.println("\n--- Inventory Management ---");
+//            System.out.println("1. Add New Inventory");
+//            System.out.println("2. View Inventory");
+//            System.out.println("3. Update Dress Status");
+//            System.out.println("0. Return to Main Menu");
+//            System.out.print("Choose an option: ");
+//            int choice = scanner.nextInt();
+//            scanner.nextLine(); 
+//
+//            switch (choice) {
+//                case 1 -> addNewInventory();
+//                case 2 -> inventoryManager.displayInventory();
+//                case 3 -> updateDressStatus1();
+//                case 0 -> { return; }
+//                default -> System.out.println("Invalid option. Please try again.");
+//            }
+//        }
+//    }
 
     /**
      * Adds a new inventory record to the specified store.
@@ -1031,6 +1075,10 @@ public class Main {
      * Washes and prepares a returned dress for the next rental.
      * Updates the dress status and saves changes to the inventory file.
      */
+    /**
+     * Washes and prepares a returned dress for the next rental.
+     * Updates the dress status and saves changes to the inventory file.
+     */
     private static void washAndPrepDress() {
         System.out.print("Enter Store ID: ");
         String storeId = scanner.nextLine();
@@ -1038,26 +1086,27 @@ public class Main {
         System.out.print("Enter Dress ID for Wash and Prep: ");
         String dressId = scanner.nextLine();
 
-        InventoryItem dress = inventoryManager.findDressById(dressId);
+        InventoryItem dress = inventoryManager.findDressByIdInStore(storeId, dressId);
 
         if (dress == null) {
-            System.out.println("Dress not found in inventory.");
+            System.out.println("Dress not found in the specified store.");
             return;
         }
 
-        if ("Available".equalsIgnoreCase(dress.getStatus())) {
+        if ("Rented".equalsIgnoreCase(dress.getStatus())) {
             dress.setStatus("In Progress");
             System.out.println("Dress marked for cleaning.");
-            
-            dress.setStatus("Ready");
+
+            dress.setStatus("Available");
             System.out.println("Dress is now cleaned and ready for the next rental.");
+            inventoryManager.saveInventoryToFile();
         } else {
             System.out.println("Dress is not available for cleaning. Current status: " + dress.getStatus());
         }
-
-        inventoryManager.saveInventoryToFile();
     }
 
+
+    
     /**
      * Processes a rental checkout with a debit card.
      * Validates reservation, processes payment, updates the dress status, 
@@ -1073,22 +1122,29 @@ public class Main {
             return;
         }
 
+        System.out.print("Enter Store ID: ");
+        String storeId = scanner.nextLine();
+
         System.out.print("Enter Dress ID: ");
         String dressId = scanner.nextLine();
-        InventoryItem dress = inventoryManager.findDressById(dressId);
-        List<Reservation> allReservations = ReservationManager.loadReservationsFromFile(customerManager, inventoryManager);
+        InventoryItem dress = inventoryManager.findDressByIdInStore(storeId, dressId);
 
         if (dress == null) {
-            System.out.println("Dress not found in inventory.");
+            System.out.println("Dress not found in the specified store.");
             return;
         }
 
-        boolean hasReservation = customer.getReservations().stream()
-                .anyMatch(reservation -> reservation.getDress().getDressId().equals(dressId) && 
-                                          reservation.getStatus().equals("Confirmed"));
+        // Load Reservations
+        List<Reservation> allReservations = ReservationManager.loadReservationsFromFile(customerManager, inventoryManager);
+
+        // Validate Reservation
+        boolean hasReservation = allReservations.stream()
+            .anyMatch(reservation -> reservation.getDress().getDressId().equals(dressId)
+                                    && reservation.getCustomer().getCustomerId().equals(customerId)
+                                    && "Confirmed".equalsIgnoreCase(reservation.getStatus()));
 
         if (!hasReservation) {
-            System.out.println("Customer does not have a confirmed reservation for this dress. Payment cannot be processed.");
+            System.out.println("Customer does not have a confirmed reservation for this dress.");
             return;
         }
 
@@ -1098,18 +1154,22 @@ public class Main {
 
         if (customer.getAccount() != null && customer.getAccount().hasSufficientFunds(dressPrice)) {
             Payment payment = new Payment(dressPrice, customer, employee, PaymentType.DEBIT_CARD);
+
             if (payment.processPayment(accountNumber)) {
                 customer.getAccount().deductBalance(dressPrice, customerId);
                 customerManager.saveCustomersToFile();
+
                 Account account = accountManager.findAccountByCustomerId(customerId);
                 accountManager.addOrUpdateAccount(customerId, account);
 
                 dress.setStatus("Rented");
+                inventoryManager.updateDressStatusInStore(storeId, dressId, "Rented");
+
                 ReservationManager.updateReservationStatus(dressId, "Rented", allReservations);
                 inventoryManager.saveInventoryToFile();
-                saveRentalToFile(customerId, dressId, dressPrice);
+                saveRentalToFile(customerId, storeId, dressId, dressPrice);
 
-                System.out.println("Payment successful and transaction completed for dress: " + dressId);
+                System.out.println("Payment successful. Transaction completed for dress: " + dressId);
             } else {
                 System.out.println("Payment processing failed.");
             }
@@ -1125,15 +1185,18 @@ public class Main {
      * @param dressId The ID of the rented dress.
      * @param price The rental price of the dress.
      */
-    private static void saveRentalToFile(String customerId, String dressId, double price) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("rented.txt", true))) {
-            writer.write(String.join(",", customerId, dressId, String.valueOf(price), new Date().toString()));
+    private static void saveRentalToFile(String customerId, String storeId, String dressId, double price) {
+        String rentalFile = "rentals.txt";
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(rentalFile, true))) {
+            writer.write(String.join(",", customerId, storeId, dressId, String.valueOf(price), new Date().toString()));
             writer.newLine();
-            System.out.println("Rental record saved.");
+            System.out.println("Rental record saved successfully.");
         } catch (IOException e) {
             System.out.println("Error saving rental record: " + e.getMessage());
         }
     }
+
 
     /**
      * Processes the sale of a gift card using a debit card.

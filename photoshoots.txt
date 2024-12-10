@@ -4,3 +4,4 @@ PS-1733558449923,M-001;M-015,EMP-7140,D-001,a,a,a,a,a,a,a,a,a,20.0
 PS-1733558951912,M-001;M-015,EMP-7140,D-001;D-008,a,a,a,a,a,a,a,a,a,40.0
 PS-1733726001782,M-005,EMP-7140,D-001,Ames,10:00 AM 12/05/2024,candid,romatic,RAW,Promotion,studio light,DSRL,4K,5600.0
 PS-1733839696847,M-001,EMP-7140,D-1378;D-002,des moins,6:00 pm,portrait,formal,JPEG,customer attraction,natural,DSLR,1080p,50.0
+PS-1733861276269,M-001,EMP-7140,D-4733,des moines,5:00 pm,portrait,formal,jpeg,promotion,natural,dslr,1080p,5.0

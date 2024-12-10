@@ -12,7 +12,7 @@ public class SupplierManager {
     private static final String SUPPLIER_FILE = "suppliers.txt";
     private static final String PRODUCT_FILE = "submittedProducts.txt";
     private static final String AGREEMENT_FILE = "agreements.txt";
-    private static final String AGREEMENT_REQUEST_FILE = "agreementRequests.txt";
+    private static final String AGREEMENT_REQUEST_FILE = "agreements_requests.txt";
 
     private final Map<String, Supplier> suppliers;
     private final Map<String, Set<String>> supplierAgreements; // Supplier ID -> Set of Store IDs
@@ -63,14 +63,19 @@ public class SupplierManager {
      * @param price The price per unit of the product
      * @param deliveryEstimate The estimated delivery time for the product
      */
+    
     public void submitProduct(String supplierId, String storeId, int quantity, double price, String deliveryEstimate) {
+        // Reload agreements before checking
+        loadAgreementsFromFile();
+        loadAgreementRequestsFromFile();
+
         if (!agreementExists(supplierId, storeId)) {
             System.out.println("Error: No agreement exists between Supplier " + supplierId + " and Store " + storeId);
             return;
         }
 
         String dressId = "D-" + (int) (Math.random() * 10000);
-
+        
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(PRODUCT_FILE, true))) {
             writer.write(String.join(",", supplierId, storeId, dressId, String.valueOf(quantity),
                     String.valueOf(price), deliveryEstimate));
@@ -80,6 +85,7 @@ public class SupplierManager {
             System.out.println("Error saving product: " + e.getMessage());
         }
 
+        // Add to store inventory
         inventoryManager.addInventory(storeId, dressId, "Available", price, quantity);
         System.out.println("Product added to Store Inventory.");
     }
@@ -112,17 +118,31 @@ public class SupplierManager {
     public void approveAgreementRequest(String requestId) {
         for (AgreementRequest request : agreementRequests) {
             if (request.getRequestId().equals(requestId) && request.getStatus().equals("Pending")) {
-                supplierAgreements.putIfAbsent(request.getSupplierId(), new HashSet<>());
-                supplierAgreements.get(request.getSupplierId()).add(request.getStoreId());
+                // Update the request status
                 request.setStatus("Approved");
+                
+                // Update in-memory agreement data
+                String supplierId = request.getSupplierId();
+                String storeId = request.getStoreId();
+                supplierAgreements.putIfAbsent(supplierId, new HashSet<>());
+                supplierAgreements.get(supplierId).add(storeId);
+                
+                // Save both changes to files
                 saveAgreementRequestsToFile();
                 saveAgreementsToFile();
-                System.out.println("Agreement request approved.");
+                
+                // Optional: Reload from files to ensure consistency
+                loadAgreementsFromFile();
+                loadAgreementRequestsFromFile();
+                
+                System.out.println("Agreement request approved and agreement saved.");
                 return;
             }
         }
         System.out.println("Agreement request not found or already processed.");
     }
+
+ 
 
     /**
      * Rejects a pending agreement request.
@@ -145,6 +165,33 @@ public class SupplierManager {
      * Displays all agreement requests in the system.
      */
     public void viewAgreementRequests() {
+        // Clear and reload requests
+        loadAgreementRequestsFromFile();
+        
+        // Use a Set to store unique requests
+        Set<String> seenRequests = new HashSet<>();
+        List<AgreementRequest> uniqueRequests = new ArrayList<>();
+        
+        for (AgreementRequest request : agreementRequests) {
+            // Create a unique key for each request
+            String requestKey = request.getRequestId() + "-" + 
+                              request.getSupplierId() + "-" + 
+                              request.getStoreId();
+                              
+            // Only add if we haven't seen this request before
+            if (!seenRequests.contains(requestKey)) {
+                seenRequests.add(requestKey);
+                uniqueRequests.add(request);
+            }
+        }
+        
+        // Replace the old list with deduplicated one
+        agreementRequests.clear();
+        agreementRequests.addAll(uniqueRequests);
+        
+        // Save the deduplicated list back to file
+        saveAgreementRequestsToFile();
+        
         if (agreementRequests.isEmpty()) {
             System.out.println("No agreement requests found.");
             return;
@@ -155,7 +202,8 @@ public class SupplierManager {
             System.out.println(request);
         }
     }
-
+    
+    
     /**
      * Checks if an agreement exists between a supplier and a store.
      *
@@ -163,10 +211,31 @@ public class SupplierManager {
      * @param storeId The ID of the store
      * @return true if an agreement exists, false otherwise
      */
+    // Also add debug to agreementExists method
     public boolean agreementExists(String supplierId, String storeId) {
-        return supplierAgreements.containsKey(supplierId) &&
-               supplierAgreements.get(supplierId).contains(storeId);
-    }
+        // First check in-memory data
+        if (supplierAgreements.containsKey(supplierId) && 
+            supplierAgreements.get(supplierId).contains(storeId)) {
+            return true;
+        }
+        
+        // Then check file data (in case memory is out of sync)
+        try (BufferedReader reader = new BufferedReader(new FileReader(AGREEMENT_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 2 && 
+                    parts[0].equals(supplierId) && 
+                    parts[1].equals(storeId)) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error checking agreements: " + e.getMessage());
+        }
+        
+        return false;
+    }   
 
     /**
      * Displays all products submitted by a specific supplier.
@@ -215,6 +284,7 @@ public class SupplierManager {
      * Loads agreement data from the agreements file.
      */
     private void loadAgreementsFromFile() {
+        // First load from agreements file
         try (BufferedReader reader = new BufferedReader(new FileReader(AGREEMENT_FILE))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -225,24 +295,49 @@ public class SupplierManager {
         } catch (IOException e) {
             System.out.println("Error loading agreements: " + e.getMessage());
         }
-    }
 
-    /**
-     * Loads agreement request data from the agreement requests file.
-     */
-    private void loadAgreementRequestsFromFile() {
+        // Then load approved agreements from agreement requests
         try (BufferedReader reader = new BufferedReader(new FileReader(AGREEMENT_REQUEST_FILE))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 4) {
-                    agreementRequests.add(new AgreementRequest(parts[0], parts[1], parts[2], parts[3]));
+                if (parts.length == 4 && parts[3].equals("Approved")) {
+                    String supplierId = parts[1];
+                    String storeId = parts[2];
+                    supplierAgreements.putIfAbsent(supplierId, new HashSet<>());
+                    supplierAgreements.get(supplierId).add(storeId);
                 }
             }
         } catch (IOException e) {
             System.out.println("Error loading agreement requests: " + e.getMessage());
         }
     }
+
+
+    /**
+     * Loads agreement request data from the agreement requests file.
+     */
+
+private void loadAgreementRequestsFromFile() {
+    agreementRequests.clear(); // Clear existing data
+    Set<String> seenRequests = new HashSet<>();
+    
+    try (BufferedReader reader = new BufferedReader(new FileReader(AGREEMENT_REQUEST_FILE))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] parts = line.split(",");
+            if (parts.length == 4) {
+                String requestKey = parts[0] + "-" + parts[1] + "-" + parts[2];
+                if (!seenRequests.contains(requestKey)) {
+                    seenRequests.add(requestKey);
+                    agreementRequests.add(new AgreementRequest(parts[0], parts[1], parts[2], parts[3]));
+                }
+            }
+        }
+    } catch (IOException e) {
+        System.out.println("Error loading agreement requests: " + e.getMessage());
+    }
+}
 
     /**
      * Saves supplier data to the suppliers file.
@@ -280,9 +375,18 @@ public class SupplierManager {
      */
     private void saveAgreementRequestsToFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(AGREEMENT_REQUEST_FILE))) {
+            // Clear the file first
+            writer.write("");
+            writer.flush();
+            
+            // Write each unique request
             for (AgreementRequest request : agreementRequests) {
-                writer.write(String.join(",", request.getRequestId(), request.getSupplierId(),
-                        request.getStoreId(), request.getStatus()));
+                writer.write(String.join(",",
+                    request.getRequestId(),
+                    request.getSupplierId(),
+                    request.getStoreId(),
+                    request.getStatus()
+                ));
                 writer.newLine();
             }
         } catch (IOException e) {
