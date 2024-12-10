@@ -4,45 +4,83 @@ public class InventoryItem {
     private String dressId;
     private String status;
     private double price;
+    private int quantity;  // New field for tracking dress quantity
     private String tentativeAvailabilityDate;
-    private boolean reserved;  // New field to track if the dress is reserved
+    private boolean reserved;  // Tracks if the dress is reserved
 
-    public InventoryItem(String dressId, String status, double price) {
+    // Constructor
+    public InventoryItem(String dressId, String status, double price, int quantity, String tentativeAvailabilityDate) {
         this.dressId = dressId;
         this.status = status;
         this.price = price;
-        this.reserved = false; // Initially, the dress is not reserved
+        this.quantity = quantity;
+        this.tentativeAvailabilityDate = tentativeAvailabilityDate;
+        this.reserved = "Reserved".equalsIgnoreCase(status);  // Automatically set reserved if status is "Reserved"
     }
 
-    public String getDressId() { return dressId; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    // Getters and Setters
+    public String getDressId() {
+        return dressId;
+    }
 
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public String getStatus() {
+        return status;
+    }
 
-    public String getTentativeAvailabilityDate() { return tentativeAvailabilityDate; }
+    public void setStatus(String status) {
+        this.status = status;
+        this.reserved = "Reserved".equalsIgnoreCase(status);  // Sync reserved status with dress status
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getTentativeAvailabilityDate() {
+        return tentativeAvailabilityDate;
+    }
+
     public void setTentativeAvailabilityDate(String tentativeAvailabilityDate) {
         this.tentativeAvailabilityDate = tentativeAvailabilityDate;
     }
 
-    public boolean isReserved() { return reserved; }  // New method to check reservation status
-    public void setReserved(boolean reserved) { this.reserved = reserved; }  // New method to update reservation status
+    public boolean isReserved() {
+        return reserved;
+    }
+
+    public void setReserved(boolean reserved) {
+        this.reserved = reserved;
+        this.status = reserved ? "Reserved" : "Available";  // Automatically update status
+    }
 
     public void markReserved() {
-        this.reserved = true;
-        this.status = "Reserved";
+        setReserved(true);
     }
 
     public void markAvailable() {
-        this.reserved = false;
-        this.status = "Available";
+        setReserved(false);
     }
 
     @Override
     public String toString() {
-        return "Dress ID: " + dressId + ", Status: " + status + ", Price: $" + price +
+        return "Dress ID: " + dressId +
+                ", Status: " + status +
+                ", Price: $" + price +
+                ", Quantity: " + quantity +
                 ", Reserved: " + reserved +
-                (tentativeAvailabilityDate != null ? ", Tentative Availability: " + tentativeAvailabilityDate : "");
+                (tentativeAvailabilityDate != null && !tentativeAvailabilityDate.isEmpty() ? 
+                ", Tentative Availability: " + tentativeAvailabilityDate : "");
     }
 }

@@ -20,9 +20,9 @@ import java.util.Scanner;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
+    private static final StoreManager storeManager = new StoreManager();
     private static final AccountManager accountManager = new AccountManager();
     private static final CustomerManager customerManager = new CustomerManager(accountManager);
-    private static final InventoryManager inventoryManager = new InventoryManager();
     private static final CandidateManager candidateManager = new CandidateManager();
     // private static final EmployeeManager employeeManager = new EmployeeManager();
     private static final TrainingManager trainingManager = new TrainingManager(); // Initialize trainingManager first
@@ -35,6 +35,9 @@ public class Main {
     //private static final TrainingManager trainingManager = new TrainingManager();
     private static final HR hr = new HR(candidateManager, employeeManager, trainingManager, scanner);
     private static final EmployeePortal employeePortal = new EmployeePortal(trainingManager, employeeManager);
+    private static final InventoryManager inventoryManager = new InventoryManager();
+    private static final InventoryTransferManager inventoryTransferManager = new InventoryTransferManager(inventoryManager);
+    private static final SupplierManager supplierManager = new SupplierManager(inventoryManager);
 
     public static void main(String[] args) {
         System.out.println("Welcome to the Wedding Dress Rental System!");
@@ -47,6 +50,10 @@ public class Main {
             System.out.println("4. Marketing");
             System.out.println("5. Advertising");
             System.out.println("6. Models");
+            System.out.println("7. Suppliers");
+            System.out.println("8. Stores");
+            System.out.println("9. Inventory Transfers");
+            System.out.println("10. Inventory Menu");
             System.out.println("0. Exit");
             System.out.print("Choose your role: ");
             int roleChoice = scanner.nextInt();
@@ -59,6 +66,10 @@ public class Main {
                 case 4 -> marketingMenu();
                 case 5 -> advertisingMenu();
                 case 6 -> eventMenu();
+                case 7-> supplierMenu();
+                case 8 -> storeMenu();
+                case 9 -> inventoryTransferMenu();
+                case 10 -> inventoryMenu();
                 case 0 -> {
                     System.out.println("Exiting system. Goodbye!");
                     return;
@@ -135,7 +146,7 @@ public class Main {
             scanner.nextLine(); // consume newline
 
             switch (choice) {
-                case 1 -> updateDressStatus();
+                case 1 -> updateDressStatus1();
                 case 2 -> processDressAlterationRequest();
                 case 3 -> washAndPrepDress();
                 case 4 -> inventoryManager.displayInventory();
@@ -153,6 +164,264 @@ public class Main {
             }
         }
     }
+    
+    
+
+    // Supplier Management Menu
+    private static void supplierMenu() {
+        while (true) {
+            System.out.println("\n--- Supplier Management ---");
+            System.out.println("1. Register Supplier");
+            System.out.println("2. Submit Product");
+            System.out.println("3. View Submitted Products");
+            System.out.println("4. Register Supplier-Store Agreement");
+            System.out.println("0. Return to Main Menu");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline
+
+            switch (choice) {
+                case 1 -> registerSupplier();
+                case 2 -> submitProduct();
+                case 3 -> viewSubmittedProducts();
+                case 4 -> registerAgreement();
+                case 0 -> {
+                    System.out.println("Returning to Main Menu...");
+                    return;
+                }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    // Register a New Supplier
+    private static void registerSupplier() {
+        System.out.print("Enter Company Name: ");
+        String companyName = scanner.nextLine();
+        System.out.print("Enter Email: ");
+        String email = scanner.nextLine();
+        System.out.print("Enter Phone: ");
+        String phone = scanner.nextLine();
+        System.out.print("Enter Product Categories (comma-separated): ");
+        String categories = scanner.nextLine();
+
+        String supplierId = supplierManager.registerSupplier(companyName, email, phone, categories);
+        System.out.println("Supplier registered successfully! Supplier ID: " + supplierId);
+    }
+
+    // Submit Product from Supplier to Store
+    private static void submitProduct() {
+        System.out.print("Enter Supplier ID: ");
+        String supplierId = scanner.nextLine();
+
+        if (!supplierManager.exists(supplierId)) {
+            System.out.println("Supplier not found.");
+            return;
+        }
+
+        System.out.print("Enter Store ID: ");
+        String storeId = scanner.nextLine();
+
+        System.out.print("Enter Product Quantity: ");
+        int quantity = scanner.nextInt();
+
+        System.out.print("Enter Price per Unit: ");
+        double price = scanner.nextDouble();
+        scanner.nextLine();  // Consume newline
+
+        System.out.print("Enter Delivery Estimate: ");
+        String deliveryEstimate = scanner.nextLine();
+
+        supplierManager.submitProduct(supplierId, storeId, quantity, price, deliveryEstimate);
+    }
+
+    // View Submitted Products for a Supplier
+    private static void viewSubmittedProducts() {
+        System.out.print("Enter Supplier ID: ");
+        String supplierId = scanner.nextLine();
+
+        if (!supplierManager.exists(supplierId)) {
+            System.out.println("Supplier not found.");
+            return;
+        }
+
+        supplierManager.viewSubmittedProducts(supplierId);
+    }
+
+    // Register Agreement Between Supplier and Store
+    private static void registerAgreement() {
+        System.out.print("Enter Supplier ID: ");
+        String supplierId = scanner.nextLine();
+
+        if (!supplierManager.exists(supplierId)) {
+            System.out.println("Supplier not found.");
+            return;
+        }
+
+        System.out.print("Enter Store ID: ");
+        String storeId = scanner.nextLine();
+
+        supplierManager.registerAgreement(supplierId, storeId);
+    }
+
+    // --- Store Management ---
+    private static void storeMenu() {
+        while (true) {
+            System.out.println("\n--- Store Management ---");
+            System.out.println("1. Register New Store");
+            System.out.println("2. View All Stores");
+            System.out.println("0. Return to Main Menu");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) {
+                case 1 -> registerNewStore();
+                case 2 -> storeManager.viewStores();
+                case 0 -> { return; }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    private static void registerNewStore() {
+        System.out.print("Enter Store Name: ");
+        String storeName = scanner.nextLine();
+        System.out.print("Enter Store Location: ");
+        String location = scanner.nextLine();
+        System.out.print("Enter Store Contact Information: ");
+        String contactInfo = scanner.nextLine();
+        String storeId = "STORE-" + (int) (Math.random() * 1000);
+        storeManager.registerStore(storeId, storeName, location, contactInfo);
+    }
+
+    
+    // --- Inventory Management ---
+    private static void inventoryMenu() {
+        while (true) {
+            System.out.println("\n--- Inventory Management ---");
+            System.out.println("1. Add New Inventory");
+            System.out.println("2. View Inventory");
+            System.out.println("3. Update Dress Status");
+            System.out.println("0. Return to Main Menu");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) {
+                case 1 -> addNewInventory();
+                case 2 -> inventoryManager.displayInventory();
+                case 3 -> updateDressStatus1();
+                case 0 -> { return; }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    private static void addNewInventory() {
+        System.out.print("Enter Store ID: ");
+        String storeId = scanner.nextLine();
+
+        System.out.print("Enter Dress ID: ");
+        String dressId = scanner.nextLine();
+
+        System.out.print("Enter Status (Available/Rented): ");
+        String status = scanner.nextLine();
+
+        System.out.print("Enter Price: ");
+        double price = scanner.nextDouble();
+
+        System.out.print("Enter Quantity: ");
+        int quantity = scanner.nextInt();
+        scanner.nextLine();  // Consume newline
+
+        inventoryManager.addInventory(storeId, dressId, status, price, quantity);
+    }
+
+
+    private static void updateDressStatus1() {
+        System.out.print("Enter Dress ID to Update: ");
+        String dressId = scanner.nextLine();
+        System.out.print("Enter New Status (Available, Rented, Undergoing Repair, Retired): ");
+        String newStatus = scanner.nextLine();
+
+        try {
+            inventoryManager.updateDressStatus(dressId, newStatus);
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+    // --- Inventory Transfers ---
+    private static void inventoryTransferMenu() {
+        while (true) {
+            System.out.println("\n--- Inventory Transfers ---");
+            System.out.println("1. Request Inventory Transfer");
+            System.out.println("2. View Pending Requests for a Store");
+            System.out.println("3. Approve or Reject Requests");
+            System.out.println("4. View All Transfers");
+            System.out.println("0. Return to Main Menu");
+            System.out.print("Choose an option: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            switch (choice) {
+                case 1 -> requestInventoryTransfer();
+                case 2 -> viewPendingRequests();
+                case 3 -> approveOrRejectRequest();
+                case 4 -> inventoryTransferManager.viewAllTransfers();
+                case 0 -> { return; }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+ // Request Inventory Transfer
+
+    private static void requestInventoryTransfer() {
+        System.out.print("Enter From Store ID (Requesting Store): ");
+        String fromStoreId = scanner.nextLine();
+
+        System.out.print("Enter To Store ID (Providing Store): ");
+        String toStoreId = scanner.nextLine();
+
+        System.out.print("Enter Product Name (Dress ID): ");
+        String product = scanner.nextLine();
+
+        System.out.print("Enter Quantity: ");
+        int quantity = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        // Validate if the product exists in the `To Store` (Providing Store)
+        int availableQuantity = inventoryManager.getDressQuantity(toStoreId, product);
+        double price = inventoryManager.getProductPrice(toStoreId, product);
+
+        if (availableQuantity >= quantity && price > 0) {
+            inventoryTransferManager.requestTransfer(fromStoreId, toStoreId, product, price, quantity);
+        } else {
+            System.out.println("Error: Product not found or insufficient quantity in the providing store.");
+        }
+    }
+
+
+
+    private static void viewPendingRequests() {
+        System.out.print("Enter Store ID to View Requests: ");
+        String storeId = scanner.nextLine();
+        inventoryTransferManager.viewPendingRequestsForStore(storeId);
+    }
+
+    private static void approveOrRejectRequest() {
+        System.out.print("Enter Store ID: ");
+        String storeId = scanner.nextLine();
+        System.out.print("Enter Request ID: ");
+        String transferId = scanner.nextLine();
+        System.out.print("Approve Request? (Y/N): ");
+        String decision = scanner.nextLine().toUpperCase();
+        if ("Y".equals(decision)) inventoryTransferManager.approveTransfer(storeId, transferId);
+        else inventoryTransferManager.rejectTransfer(storeId, transferId);
+    }
+
+
 
     //ADDED
     private static void handleViewAssignedTrainings() {
@@ -591,17 +860,20 @@ private static String generateCustomizationId() {
 
 
     private static void washAndPrepDress() {
-        System.out.print("Enter Dress ID for wash and prep: ");
+        System.out.print("Enter Store ID: ");
+        String storeId = scanner.nextLine();
+
+        System.out.print("Enter Dress ID for Wash and Prep: ");
         String dressId = scanner.nextLine();
+
         InventoryItem dress = inventoryManager.findDressById(dressId);
 
         if (dress == null) {
             System.out.println("Dress not found in inventory.");
             return;
         }
-        
 
-        if ("Available".equals(dress.getStatus())) {
+        if ("Available".equalsIgnoreCase(dress.getStatus())) {
             dress.setStatus("In Progress");
             System.out.println("Dress marked for cleaning.");
 
@@ -613,6 +885,7 @@ private static String generateCustomizationId() {
 
         inventoryManager.saveInventoryToFile();
     }
+
 
     private static void checkoutRentalWithDebitCard() {
         System.out.print("Enter Customer ID: ");

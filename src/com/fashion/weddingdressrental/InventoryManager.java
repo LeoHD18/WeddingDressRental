@@ -1,31 +1,126 @@
 package com.fashion.weddingdressrental;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class InventoryManager {
     private Map<String, InventoryItem> inventory;
+    private Map<String, Map<String, InventoryItem>> storeInventories;
     private static final String FILE_PATH = "inventory.txt";
 
+    // Constructor
     public InventoryManager() {
         inventory = new HashMap<>();
+        storeInventories = new HashMap<>();
         loadInventoryFromFile();
     }
 
-    // Load inventory data from the file
+    public void addInventory(String storeId, String dressId, String status, double price, int quantity) {
+        storeInventories.putIfAbsent(storeId, new HashMap<>());
+
+        Map<String, InventoryItem> inventory = storeInventories.get(storeId);
+
+        if (inventory.containsKey(dressId)) {
+            InventoryItem existingItem = inventory.get(dressId);
+            existingItem.setQuantity(existingItem.getQuantity() + quantity);
+            System.out.println("Inventory updated successfully! New quantity: " + existingItem.getQuantity());
+        } else {
+            InventoryItem newItem = new InventoryItem(dressId, status, price, quantity, null);
+            inventory.put(dressId, newItem);
+            System.out.println("New inventory item added successfully!");
+        }
+        saveInventoryToFile();
+    }
+
+
+    // Deduct Inventory
+    public boolean deductInventory(String storeId, String dressId, int quantity) {
+        if (storeInventories.containsKey(storeId)) {
+            Map<String, InventoryItem> inventory = storeInventories.get(storeId);
+
+            if (inventory.containsKey(dressId)) {
+                InventoryItem item = inventory.get(dressId);
+                if (item.getQuantity() >= quantity) {
+                    item.setQuantity(item.getQuantity() - quantity);
+                    System.out.println("Inventory deducted successfully!");
+                    saveInventoryToFile();
+                    return true;
+                }
+            }
+        }
+        System.out.println("Error: Insufficient inventory for dress ID " + dressId + " in store " + storeId);
+        return false;
+    }
+
+//    public int getDressQuantity(String storeId, String dressId) {
+//        if (storeInventories.containsKey(storeId) && storeInventories.get(storeId).containsKey(dressId)) {
+//            return storeInventories.get(storeId).get(dressId).getQuantity();
+//        }
+//        return 0;
+//    }
+
+    
+    public void displayStoreInventory(String storeId) {
+        if (storeInventories.containsKey(storeId)) {
+            System.out.println("\n--- Inventory for Store " + storeId + " ---");
+            storeInventories.get(storeId).forEach((id, item) -> System.out.println(item));
+        } else {
+            System.out.println("Store ID " + storeId + " not found.");
+        }
+    }
+
+
+    
+ 
+ // Get Product Quantity from Store Inventory
+    public int getDressQuantity(String storeId, String dressId) {
+        if (storeInventories.containsKey(storeId) && storeInventories.get(storeId).containsKey(dressId)) {
+            return storeInventories.get(storeId).get(dressId).getQuantity();
+        }
+        return 0;
+    }
+
+    // Get Product Price from Store Inventory
+    public double getProductPrice(String storeId, String dressId) {
+        if (storeInventories.containsKey(storeId) && storeInventories.get(storeId).containsKey(dressId)) {
+            return storeInventories.get(storeId).get(dressId).getPrice();
+        }
+        return -1.0; // Indicate product not found
+    }
+
+    
+ // Load Inventory Data from File
     private void loadInventoryFromFile() {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 3) {  // Ensure the file includes price information
-                    String dressId = parts[0];
-                    String status = parts[1];
-                    double price = Double.parseDouble(parts[2]);
-                    inventory.put(dressId, new InventoryItem(dressId, status, price));
+
+                // Validate expected format: storeId, dressId, status, price, quantity [, tentativeDate]
+                if (parts.length >= 5) {
+                    String storeId = parts[0];
+                    String dressId = parts[1];
+                    String status = parts[2];
+
+                    // Ensure price and quantity are numeric
+                    double price;
+                    int quantity;
+                    try {
+                        price = Double.parseDouble(parts[3]);
+                        quantity = Integer.parseInt(parts[4]);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid data format in inventory file for dress ID: " + dressId);
+                        continue;  // Skip this record if data is invalid
+                    }
+
+                    String tentativeDate = parts.length == 6 ? parts[5] : null;
+
+                    // Add to store inventories
+                    storeInventories.putIfAbsent(storeId, new HashMap<>());
+                    InventoryItem item = new InventoryItem(dressId, status, price, quantity, tentativeDate);
+                    storeInventories.get(storeId).put(dressId, item);
+                } else {
+                    System.out.println("Skipping invalid line in file: " + line);
                 }
             }
             System.out.println("Inventory loaded successfully.");
@@ -34,12 +129,18 @@ public class InventoryManager {
         }
     }
 
-    // Save updated inventory data to the file
+
+ // Save Updated Inventory to File
     public void saveInventoryToFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
-            for (InventoryItem item : inventory.values()) {
-                writer.write(item.getDressId() + "," + item.getStatus() + "," + item.getPrice());
-                writer.newLine();
+            for (Map.Entry<String, Map<String, InventoryItem>> storeEntry : storeInventories.entrySet()) {
+                String storeId = storeEntry.getKey();
+                for (InventoryItem item : storeEntry.getValue().values()) {
+                    writer.write(storeId + "," + item.getDressId() + "," + item.getStatus() + "," 
+                                 + item.getPrice() + "," + item.getQuantity() +
+                                 (item.getTentativeAvailabilityDate() != null ? "," + item.getTentativeAvailabilityDate() : ""));
+                    writer.newLine();
+                }
             }
             System.out.println("Inventory saved successfully.");
         } catch (IOException e) {
@@ -47,12 +148,14 @@ public class InventoryManager {
         }
     }
 
-    // Find a dress in the inventory by its ID
+
+
+    // Find Dress by ID
     public InventoryItem findDressById(String dressId) {
         return inventory.get(dressId);
     }
 
-    // Update the status of a dress
+    // Update Dress Status
     public void updateDressStatus(String dressId, String newStatus) throws Exception {
         InventoryItem item = findDressById(dressId);
         if (item == null) {
@@ -62,49 +165,43 @@ public class InventoryManager {
         item.setStatus(newStatus);
         System.out.println("Status of dress " + dressId + " updated to " + newStatus);
 
-        // Handle specific cases for status updates
-        if ("Undergoing Repair".equals(newStatus)) {
+        if ("Undergoing Repair".equalsIgnoreCase(newStatus)) {
             notifyRepairTeam(item);
-        } else if ("Retired".equals(newStatus)) {
+        } else if ("Retired".equalsIgnoreCase(newStatus)) {
             removeFromInventory(dressId);
         }
-
-        // Save changes to file after updating status
         saveInventoryToFile();
     }
 
-    // Notify repair team when a dress is set to "Undergoing Repair"
+    // Notify Repair Team
     private void notifyRepairTeam(InventoryItem item) {
-        item.setTentativeAvailabilityDate("2023-12-01"); // Example date
+        item.setTentativeAvailabilityDate("2024-01-01");
         System.out.println("Repair team notified for dress " + item.getDressId() +
                 ". Tentative availability date set to " + item.getTentativeAvailabilityDate());
     }
 
-    // Remove a dress from inventory if it's retired
+    // Remove Dress from Inventory
     private void removeFromInventory(String dressId) {
         inventory.remove(dressId);
-        System.out.println("Dress " + dressId + " marked as retired and removed from future availability.");
+        System.out.println("Dress " + dressId + " marked as retired and removed.");
         saveInventoryToFile();
     }
 
-    // Display all items in the inventory
+    // Display All Items in Inventory
     public void displayInventory() {
         System.out.println("\n--- Inventory ---");
         inventory.forEach((id, item) -> System.out.println(item));
     }
 
-     /**
-     * Retrieves a list of all available dresses from the inventory.
-     *
-     * @return A list of inventory items with status "Available."
-     */
+    // Get Available Dresses
     public List<InventoryItem> getAvailableDresses() {
         List<InventoryItem> availableDresses = new ArrayList<>();
         for (InventoryItem item : inventory.values()) {
-            if ("Available".equalsIgnoreCase(item.getStatus())) {
+            if ("Available".equalsIgnoreCase(item.getStatus()) && item.getQuantity() > 0) {
                 availableDresses.add(item);
             }
         }
         return availableDresses;
     }
+
 }
