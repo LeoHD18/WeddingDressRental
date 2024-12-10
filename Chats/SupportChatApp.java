@@ -2,10 +2,21 @@ package Chats;
 
 import java.util.Scanner;
 
+/**
+ * The SupportChatApp class serves as the entry point for the support team to interact with customers in a chat session.
+ * It facilitates sending messages to customers and managing the chat lifecycle.
+ */
 public class SupportChatApp {
+
+    /**
+     * The main method initializes a chat session with a specified customer and enables support agents to send messages.
+     *
+     * @param args Command-line arguments where the first argument is the customer's name.
+     *             Usage: java Chats.SupportChatApp <customerName>
+     */
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.out.println("Usage: java chat.SupportChatApp <customerName>");
+            System.out.println("Usage: java Chats.SupportChatApp <customerName>");
             return;
         }
         
@@ -33,4 +44,4 @@ public class SupportChatApp {
         scanner.close();
         System.out.println("Chat with " + customerName + " ended.");
     }
-} 
+}
