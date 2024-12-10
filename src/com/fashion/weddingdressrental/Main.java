@@ -18,27 +18,104 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * Main class for the Dress Rental System.
+ * Initializes key components and manages the application's entry point.
+ */
 public class Main {
-    private static final Scanner scanner = new Scanner(System.in);
-    private static final StoreManager storeManager = new StoreManager();
-    private static final AccountManager accountManager = new AccountManager();
-    private static final CustomerManager customerManager = new CustomerManager(accountManager);
-    private static final CandidateManager candidateManager = new CandidateManager();
-    // private static final EmployeeManager employeeManager = new EmployeeManager();
-    private static final TrainingManager trainingManager = new TrainingManager(); // Initialize trainingManager first
-    private static final EmployeeManager employeeManager = new EmployeeManager(trainingManager); // Now this works
-    private static final ModelManager modelManager = new ModelManager();
-    private static final PhotoshootManager photoshootManager = new PhotoshootManager();
-    private static final Employee employee = new Employee("123","John","Ames",65000,"Sale");
-    private static final AdvertisingDepartment advertisingDepartment = new AdvertisingDepartment();
-    private static final MarketingDepartment marketingDepartment = new MarketingDepartment(customerManager,advertisingDepartment);
-    //private static final TrainingManager trainingManager = new TrainingManager();
-    private static final HR hr = new HR(candidateManager, employeeManager, trainingManager, scanner);
-    private static final EmployeePortal employeePortal = new EmployeePortal(trainingManager, employeeManager);
-    private static final InventoryManager inventoryManager = new InventoryManager();
-    private static final InventoryTransferManager inventoryTransferManager = new InventoryTransferManager(inventoryManager);
-    private static final SupplierManager supplierManager = new SupplierManager(inventoryManager);
 
+    /**
+     * Scanner used for user input throughout the application.
+     */
+    private static final Scanner scanner = new Scanner(System.in);
+
+    /**
+     * Manages all store-related operations, including adding and viewing stores.
+     */
+    private static final StoreManager storeManager = new StoreManager();
+
+    /**
+     * Manages customer bank accounts, including deposits and withdrawals.
+     */
+    private static final AccountManager accountManager = new AccountManager();
+
+    /**
+     * Manages customer records, including registrations and account details.
+     */
+    private static final CustomerManager customerManager = new CustomerManager(accountManager);
+
+    /**
+     * Manages candidate applications, including hiring and interviewing.
+     */
+    private static final CandidateManager candidateManager = new CandidateManager();
+
+    /**
+     * Manages training sessions for employees.
+     */
+    private static final TrainingManager trainingManager = new TrainingManager();
+
+    /**
+     * Manages employees, including hiring, assigning tasks, and training.
+     */
+    private static final EmployeeManager employeeManager = new EmployeeManager(trainingManager);
+
+    /**
+     * Manages models for events such as photoshoots and fashion shows.
+     */
+    private static final ModelManager modelManager = new ModelManager();
+
+    /**
+     * Manages photoshoot events, including scheduling and assignment of models.
+     */
+    private static final PhotoshootManager photoshootManager = new PhotoshootManager();
+
+    /**
+     * Represents a generic employee for system operations.
+     */
+    private static final Employee employee = new Employee("123", "John", "Ames", 65000, "Sale");
+
+    /**
+     * Handles advertising tasks, including reviewing promotions and campaigns.
+     */
+    private static final AdvertisingDepartment advertisingDepartment = new AdvertisingDepartment();
+
+    /**
+     * Manages marketing operations such as promotions, newsletters, and email campaigns.
+     */
+    private static final MarketingDepartment marketingDepartment = new MarketingDepartment(customerManager, advertisingDepartment);
+
+    /**
+     * Handles human resources tasks, including candidate management, hiring, and employee training.
+     */
+    private static final HR hr = new HR(candidateManager, employeeManager, trainingManager, scanner);
+
+    /**
+     * Provides an interface for employees to access their assigned tasks and trainings.
+     */
+    private static final EmployeePortal employeePortal = new EmployeePortal(trainingManager, employeeManager);
+
+    /**
+     * Manages the inventory, including dresses and store supplies.
+     */
+    private static final InventoryManager inventoryManager = new InventoryManager();
+
+    /**
+     * Manages inventory transfers between different store locations.
+     */
+    private static final InventoryTransferManager inventoryTransferManager = new InventoryTransferManager(inventoryManager);
+
+    /**
+     * Manages supplier registrations, agreements, and product submissions.
+     */
+    private static final SupplierManager supplierManager = new SupplierManager(inventoryManager);
+    
+    
+    /**
+     * Main method serving as the entry point for the Wedding Dress Rental System.
+     * Manages role selection and navigation to various system modules.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         System.out.println("Welcome to the Wedding Dress Rental System!");
 
@@ -66,7 +143,7 @@ public class Main {
                 case 4 -> marketingMenu();
                 case 5 -> advertisingMenu();
                 case 6 -> eventMenu();
-                case 7-> supplierMenu();
+                case 7 -> supplierMenu();
                 case 8 -> storeMenu();
                 case 9 -> inventoryTransferMenu();
                 case 10 -> inventoryMenu();
@@ -79,6 +156,10 @@ public class Main {
         }
     }
 
+    /**
+     * Displays the Advertising Department Menu.
+     * Allows reviewing and managing promotions.
+     */
     private static void advertisingMenu() {
         while (true) {
             System.out.println("\n--- Advertising Department Menu ---");
@@ -96,9 +177,10 @@ public class Main {
         }
     }
 
-    
-
-
+    /**
+     * Displays the Marketing Department Menu.
+     * Manages promotional campaigns, newsletters, and advertising decisions.
+     */
     private static void marketingMenu() {
         while (true) {
             System.out.println("\n--- Marketing Department Menu ---");
@@ -122,8 +204,10 @@ public class Main {
         }
     }
 
-
-    
+    /**
+     * Displays the Employee Management Menu.
+     * Allows employees to manage dresses, customers, and orders.
+     */
     private static void employeeMenu() {
         while (true) {
             System.out.println("\n--- Employee Menu ---");
@@ -136,7 +220,7 @@ public class Main {
             System.out.println("7. Sell Gift Card with Debit Card");
             System.out.println("8. View All Customers");
             System.out.println("9. Confirm Reservation");
-            System.out.println("10. Process Customization Requests"); // New option
+            System.out.println("10. Process Customization Requests");
             System.out.println("11. Handle Customer Feedback");
             System.out.println("12. View Assigned Trainings");
             System.out.println("13. Complete Training");
@@ -149,25 +233,46 @@ public class Main {
                 case 1 -> updateDressStatus1();
                 case 2 -> processDressAlterationRequest();
                 case 3 -> washAndPrepDress();
-                case 4 -> inventoryManager.displayInventory();
+                case 4 -> viewInventoryMenu();
                 case 5 -> addNewCustomer();
                 case 6 -> checkoutRentalWithDebitCard();
                 case 7 -> sellGiftCardWithDebitCard();
                 case 8 -> customerManager.displayCustomers();
                 case 9 -> confirmReservationMenu();
-                case 10 -> processCustomizationRequests(); // Call the method for processing customizations
+                case 10 -> processCustomizationRequests();
                 case 11 -> viewFeedback();
-                case 12 -> handleViewAssignedTrainings(); // Refactored case 12
-                case 13 -> handleCompleteTraining(); // Refactored case 13
+                case 12 -> handleViewAssignedTrainings();
+                case 13 -> handleCompleteTraining();
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
         }
     }
-    
-    
 
-    // Supplier Management Menu
+    /**
+     * Displays the inventory for a specific store.
+     * Requests the store ID from the user and shows the inventory details.
+     */
+    private static void viewInventoryMenu() {
+        System.out.print("Enter Store ID to view inventory: ");
+        String storeId = scanner.nextLine();
+
+        if (!storeManager.exists(storeId)) {
+            System.out.println("Store ID not found.");
+            return;
+        }
+
+        System.out.println("\n--- Inventory for Store " + storeId + " ---");
+        inventoryManager.displayStoreInventory(storeId);
+    }
+
+
+
+    /**
+     * Displays the Supplier Management Menu.
+     * Enables actions such as registering suppliers, submitting products, 
+     * creating agreements, and viewing requests or product submissions.
+     */
     private static void supplierMenu() {
         while (true) {
             System.out.println("\n--- Supplier Management ---");
@@ -175,6 +280,7 @@ public class Main {
             System.out.println("2. Submit Product");
             System.out.println("3. View Submitted Products");
             System.out.println("4. Register Supplier-Store Agreement");
+            System.out.println("5. View Agreement Status");
             System.out.println("0. Return to Main Menu");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -184,7 +290,8 @@ public class Main {
                 case 1 -> registerSupplier();
                 case 2 -> submitProduct();
                 case 3 -> viewSubmittedProducts();
-                case 4 -> registerAgreement();
+                case 4 -> createAgreementRequest();
+                case 5 -> viewAgreementRequests(); 
                 case 0 -> {
                     System.out.println("Returning to Main Menu...");
                     return;
@@ -194,7 +301,10 @@ public class Main {
         }
     }
 
-    // Register a New Supplier
+    /**
+     * Registers a new supplier by collecting supplier details.
+     * Saves the supplier record and assigns a unique supplier ID.
+     */
     private static void registerSupplier() {
         System.out.print("Enter Company Name: ");
         String companyName = scanner.nextLine();
@@ -209,7 +319,10 @@ public class Main {
         System.out.println("Supplier registered successfully! Supplier ID: " + supplierId);
     }
 
-    // Submit Product from Supplier to Store
+    /**
+     * Allows a supplier to submit a product to a specific store.
+     * Collects necessary details such as quantity, price, and delivery estimate.
+     */
     private static void submitProduct() {
         System.out.print("Enter Supplier ID: ");
         String supplierId = scanner.nextLine();
@@ -235,7 +348,10 @@ public class Main {
         supplierManager.submitProduct(supplierId, storeId, quantity, price, deliveryEstimate);
     }
 
-    // View Submitted Products for a Supplier
+    /**
+     * Displays products submitted by a specific supplier.
+     * Requires the supplier ID and shows all submitted products if available.
+     */
     private static void viewSubmittedProducts() {
         System.out.print("Enter Supplier ID: ");
         String supplierId = scanner.nextLine();
@@ -248,28 +364,57 @@ public class Main {
         supplierManager.viewSubmittedProducts(supplierId);
     }
 
-    // Register Agreement Between Supplier and Store
-    private static void registerAgreement() {
+    /**
+     * Creates a new agreement request between a supplier and a store.
+     * Requires valid supplier and store IDs.
+     */
+    private static void createAgreementRequest() {
         System.out.print("Enter Supplier ID: ");
         String supplierId = scanner.nextLine();
-
-        if (!supplierManager.exists(supplierId)) {
-            System.out.println("Supplier not found.");
-            return;
-        }
 
         System.out.print("Enter Store ID: ");
         String storeId = scanner.nextLine();
 
-        supplierManager.registerAgreement(supplierId, storeId);
+        supplierManager.createAgreementRequest(supplierId, storeId);
     }
 
-    // --- Store Management ---
+    /**
+     * Approves or rejects a supplier-store agreement request based on the request ID.
+     * Accepts user input ('Y' or 'N') to make a decision.
+     */
+    private static void approveOrRejectAgreementRequest() {
+        System.out.print("Enter Request ID: ");
+        String requestId = scanner.nextLine();
+
+        System.out.print("Approve Request? (Y/N): ");
+        String decision = scanner.nextLine().trim().toUpperCase();
+
+        if ("Y".equals(decision)) {
+            supplierManager.approveAgreementRequest(requestId);
+        } else if ("N".equals(decision)) {
+            supplierManager.rejectAgreementRequest(requestId);
+        } else {
+            System.out.println("Invalid input. Please enter 'Y' or 'N'.");
+        }
+    }
+
+    /**
+     * Displays all pending supplier-store agreement requests.
+     */
+    private static void viewAgreementRequests() {
+        supplierManager.viewAgreementRequests();
+    }
+
+    /**
+     * Displays the Store Management Menu.
+     * Enables actions such as registering new stores and viewing existing stores.
+     */
     private static void storeMenu() {
         while (true) {
             System.out.println("\n--- Store Management ---");
             System.out.println("1. Register New Store");
             System.out.println("2. View All Stores");
+            System.out.println("3. Approve Agreement Request");
             System.out.println("0. Return to Main Menu");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
@@ -278,12 +423,17 @@ public class Main {
             switch (choice) {
                 case 1 -> registerNewStore();
                 case 2 -> storeManager.viewStores();
+                case 3 -> approveOrRejectAgreementRequest();
                 case 0 -> { return; }
                 default -> System.out.println("Invalid option. Please try again.");
             }
         }
     }
 
+    /**
+     * Registers a new store by collecting relevant store information.
+     * Assigns a unique store ID and saves the store record.
+     */
     private static void registerNewStore() {
         System.out.print("Enter Store Name: ");
         String storeName = scanner.nextLine();
@@ -295,8 +445,10 @@ public class Main {
         storeManager.registerStore(storeId, storeName, location, contactInfo);
     }
 
-    
-    // --- Inventory Management ---
+    /**
+     * Displays the Inventory Management Menu.
+     * Allows adding, viewing, and updating inventory records.
+     */
     private static void inventoryMenu() {
         while (true) {
             System.out.println("\n--- Inventory Management ---");
@@ -318,6 +470,10 @@ public class Main {
         }
     }
 
+    /**
+     * Adds a new inventory record to the specified store.
+     * Collects dress ID, status, price, and quantity.
+     */
     private static void addNewInventory() {
         System.out.print("Enter Store ID: ");
         String storeId = scanner.nextLine();
@@ -338,20 +494,42 @@ public class Main {
         inventoryManager.addInventory(storeId, dressId, status, price, quantity);
     }
 
-
+    /**
+     * Updates the status of a dress in a specific store's inventory.
+     * Requires valid store and dress IDs, and a new dress status.
+     */
     private static void updateDressStatus1() {
+        System.out.print("Enter Store ID: ");
+        String storeId = scanner.nextLine();
+
         System.out.print("Enter Dress ID to Update: ");
         String dressId = scanner.nextLine();
+
+        InventoryItem dress = inventoryManager.findDressByIdInStore(storeId, dressId);
+
+        if (dress == null) {
+            System.out.println("Dress not found in the specified store.");
+            return;
+        }
+
+        System.out.println("Current Status: " + dress.getStatus());
         System.out.print("Enter New Status (Available, Rented, Undergoing Repair, Retired): ");
         String newStatus = scanner.nextLine();
 
         try {
-            inventoryManager.updateDressStatus(dressId, newStatus);
+            inventoryManager.updateDressStatusInStore(storeId, dressId, newStatus);
+            System.out.println("Dress status updated successfully.");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
-    // --- Inventory Transfers ---
+
+
+    /**
+     * Displays the Inventory Transfers Menu.
+     * Allows managing inventory transfers, including requesting, viewing, 
+     * and approving or rejecting transfers.
+     */
     private static void inventoryTransferMenu() {
         while (true) {
             System.out.println("\n--- Inventory Transfers ---");
@@ -375,8 +553,10 @@ public class Main {
         }
     }
 
- // Request Inventory Transfer
-
+    /**
+     * Requests an inventory transfer from one store to another.
+     * Validates product availability before placing the transfer request.
+     */
     private static void requestInventoryTransfer() {
         System.out.print("Enter From Store ID (Requesting Store): ");
         String fromStoreId = scanner.nextLine();
@@ -389,9 +569,8 @@ public class Main {
 
         System.out.print("Enter Quantity: ");
         int quantity = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        scanner.nextLine(); 
 
-        // Validate if the product exists in the `To Store` (Providing Store)
         int availableQuantity = inventoryManager.getDressQuantity(toStoreId, product);
         double price = inventoryManager.getProductPrice(toStoreId, product);
 
@@ -402,14 +581,19 @@ public class Main {
         }
     }
 
-
-
+    /**
+     * Displays pending inventory transfer requests for a specific store.
+     */
     private static void viewPendingRequests() {
         System.out.print("Enter Store ID to View Requests: ");
         String storeId = scanner.nextLine();
         inventoryTransferManager.viewPendingRequestsForStore(storeId);
     }
 
+    /**
+     * Approves or rejects an inventory transfer request based on the request ID.
+     * Requires user confirmation ('Y' or 'N') to process the decision.
+     */
     private static void approveOrRejectRequest() {
         System.out.print("Enter Store ID: ");
         String storeId = scanner.nextLine();
@@ -417,18 +601,23 @@ public class Main {
         String transferId = scanner.nextLine();
         System.out.print("Approve Request? (Y/N): ");
         String decision = scanner.nextLine().toUpperCase();
-        if ("Y".equals(decision)) inventoryTransferManager.approveTransfer(storeId, transferId);
-        else inventoryTransferManager.rejectTransfer(storeId, transferId);
+        
+        if ("Y".equals(decision)) {
+            inventoryTransferManager.approveTransfer(storeId, transferId);
+        } else {
+            inventoryTransferManager.rejectTransfer(storeId, transferId);
+        }
     }
 
-
-
-    //ADDED
+    /**
+     * Displays assigned training sessions for an employee based on their ID.
+     * Requires a valid employee ID and retrieves assigned trainings.
+     */
     private static void handleViewAssignedTrainings() {
         System.out.print("Enter your Employee ID: ");
         String employeeId = scanner.nextLine();
         Employee employee = employeeManager.getEmployeeMap().get(employeeId);
-    
+
         if (employee != null) {
             employeePortal.viewAssignedTrainings(employee);
         } else {
@@ -436,35 +625,38 @@ public class Main {
         }
     }
 
-    //ADDED
+    /**
+     * Marks a specific training session as completed for an employee.
+     * Updates the training records and saves changes to the file.
+     */
     private static void handleCompleteTraining() {
         System.out.print("Enter your Employee ID: ");
         String employeeId = scanner.nextLine();
         Employee employee = employeeManager.getEmployeeMap().get(employeeId);
-    
+
         if (employee != null) {
             System.out.print("Enter Training ID to complete: ");
             String trainingId = scanner.nextLine();
             employeePortal.completeTraining(employee, trainingId);
-            employeeManager.saveEmployeesToFile(); // Save updates after completion
+            employeeManager.saveEmployeesToFile(); 
         } else {
             System.out.println("Invalid Employee ID. Please try again.");
         }
     }
 
-    //ADDED
+    /**
+     * Displays customer feedback based on a dress ID or shows all feedback if no ID is provided.
+     * Loads feedback from the file and filters based on the dress ID.
+     */
     private static void viewFeedback() {
         System.out.print("Enter Dress ID to view feedback (or press Enter to view all): ");
         String dressId = scanner.nextLine();
-    
-        // Load all feedback
+
         List<Feedback> feedbackList = FeedbackManager.loadFeedback();
-    
-        // Filter feedback by dress ID if provided
         List<Feedback> filteredFeedback = feedbackList.stream()
                 .filter(fb -> dressId.isEmpty() || fb.getDressId().equals(dressId))
                 .toList();
-    
+
         if (filteredFeedback.isEmpty()) {
             System.out.println("No feedback found.");
         } else {
@@ -472,43 +664,44 @@ public class Main {
             filteredFeedback.forEach(System.out::println);
         }
     }
-    
 
-    //ADDED
+    /**
+     * Processes pending dress customization requests.
+     * Filters and approves or rejects specific requests based on user input.
+     */
     private static void processCustomizationRequests() {
         List<Customization> customizations = CustomizationManager.loadCustomizations();
-        
+
         if (customizations.isEmpty()) {
             System.out.println("No pending customization requests.");
             return;
         }
-    
-        // Filter and display pending customizations
+
         System.out.println("--- Pending Customization Requests ---");
         customizations.stream()
             .filter(c -> c.getStatus().equals("Pending"))
             .forEach(c -> System.out.println(c.toCSV()));
-    
+
         System.out.print("\nEnter the Customization ID to process: ");
         String customizationId = scanner.nextLine();
-    
+
         Customization customization = customizations.stream()
             .filter(c -> c.getCustomizationId().equals(customizationId))
             .findFirst()
             .orElse(null);
-    
+
         if (customization == null) {
             System.out.println("Invalid Customization ID.");
             return;
         }
-    
+
         System.out.println("Customization Details: " + customization.toCSV());
         System.out.print("Approve customization? (Y/N): ");
         String response = scanner.nextLine().trim().toUpperCase();
-    
+
         String newStatus = response.equals("Y") ? "Approved" : "Rejected";
         CustomizationManager.updateCustomizationStatus(customizationId, newStatus);
-    
+
         if (newStatus.equals("Approved")) {
             System.out.println("Customization approved. Ready for reservation.");
         } else {
@@ -516,51 +709,69 @@ public class Main {
         }
     }
 
+    /**
+     * Confirms a specific reservation based on its ID.
+     * Updates the reservation status and saves the change to the file.
+     */
     private static void confirmReservationMenu() {
         List<Reservation> allReservations = ReservationManager.loadReservationsFromFile(customerManager, inventoryManager);
-    
+
         if (allReservations.isEmpty()) {
             System.out.println("No pending reservations found.");
             return;
         }
-    
-        System.out.print("Enter the Reservation ID to confirm: ");
+
+        System.out.println("\n--- Pending Reservations ---");
+        allReservations.stream()
+            .filter(reservation -> !"Confirmed".equalsIgnoreCase(reservation.getStatus()))
+            .forEach(reservation -> System.out.println("ID: " + reservation.getReservationID() + 
+                                                       ", Customer: " + reservation.getCustomer().getName() +
+                                                       ", Dress: " + reservation.getDress().getDressId() +
+                                                       ", Status: " + reservation.getStatus()));
+
+        System.out.print("\nEnter the Reservation ID to confirm: ");
         String reservationId = scanner.nextLine();
-    
+
         Reservation reservationToConfirm = allReservations.stream()
                 .filter(reservation -> reservation.getReservationID().equals(reservationId))
                 .findFirst()
                 .orElse(null);
-    
+
         if (reservationToConfirm == null) {
             System.out.println("Reservation ID not found.");
             return;
         }
-    
-        reservationToConfirm.setStatus("Confirmed"); // Update status in memory
-        ReservationManager.updateReservationStatus(reservationId, "Confirmed", allReservations); // Save to file
-    
+
+        reservationToConfirm.setStatus("Confirmed");
+        ReservationManager.updateReservationStatus(reservationId, "Confirmed", allReservations); 
+
         System.out.println("Reservation " + reservationId + " confirmed successfully.");
     }
 
+
+    /**
+     * Displays the Customer Menu.
+     * Allows customers to manage their accounts, make reservations, 
+     * request alterations, leave feedback, and customize dresses.
+     */
     private static void customerMenu() {
         while (true) {
             System.out.println("\n--- Customer Menu ---");
             System.out.println("1. Request Dress Alteration");
             System.out.println("2. Make a Dress Reservation");
-            System.out.println("3. Customize a Dress"); // New Option
+            System.out.println("3. Customize a Dress");
             System.out.println("4. View Account Details");
             System.out.println("5. Submit/View Feedback");
             System.out.println("6. View Emails");
             System.out.println("0. Go Back to Role Selection");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // consume newline
+            scanner.nextLine(); 
 
             switch (choice) {
                 case 1 -> requestDressAlteration();
                 case 2 -> makeDressReservation();
-                case 3 -> customizeDress(); // Call the new method
+                case 3 -> customizeDress();
                 case 4 -> viewAccountDetails();
                 case 5 -> rateAndLeaveFeedback();
                 case 6 -> viewSentEmails(); 
@@ -570,8 +781,10 @@ public class Main {
         }
     }
 
-    
-    
+    /**
+     * Displays emails sent to the customer.
+     * Fetches and prints all promotional emails from the customer's inbox.
+     */
     private static void viewSentEmails() {
         System.out.print("Enter your Customer ID: ");
         String customerId = scanner.nextLine();
@@ -594,7 +807,11 @@ public class Main {
             }
         }
     }
-    
+
+    /**
+     * Displays current promotions from the promotions file.
+     * Reads promotions and displays them if available.
+     */
     public void displayPromotions() {
         String promotionFile = "promotions.txt";
         System.out.println("\n--- Promotions ---");
@@ -609,183 +826,86 @@ public class Main {
         }
     }
 
-    //ADDED
+    /**
+     * Allows customers to submit feedback and rate their experience.
+     * Requires a valid reservation ID and supports ratings from 1 to 5.
+     */
     private static void rateAndLeaveFeedback() {
         System.out.print("Enter your Customer ID: ");
         String customerId = scanner.nextLine();
         Customer customer = customerManager.findCustomerById(customerId);
-    
+
         if (customer == null) {
             System.out.println("Customer ID not found.");
             return;
         }
-    
+
         System.out.print("Enter Reservation ID: ");
         String reservationId = scanner.nextLine();
-    
-        // Validate reservation and retrieve Dress ID
         Reservation reservation = ReservationManager.findReservationById(reservationId, customerManager, inventoryManager);
-        if (reservation == null) {
-            System.out.println("Reservation not found. Please check your Reservation ID.");
+
+        if (reservation == null || (!"Completed".equals(reservation.getStatus()) && 
+                                    !"Confirmed".equals(reservation.getStatus()))) {
+            System.out.println("Feedback can only be given for confirmed or completed reservations.");
             return;
         }
-    
-        // Check if the reservation is not "Completed" or "Confirmed"
-        if (!"Completed".equals(reservation.getStatus()) && !"Confirmed".equals(reservation.getStatus())) {
-            System.out.printf(
-                "Feedback cannot be submitted. The reservation for Dress ID %s is currently '%s'. "
-                + "Feedback can only be given for reservations that are 'Confirmed' or 'Completed'.%n",
-                reservation.getDress().getDressId(),
-                reservation.getStatus()
-            );
-            return;
-        }
-    
-        String dressId = reservation.getDress().getDressId(); // Get Dress ID from the reservation
-    
+
+        String dressId = reservation.getDress().getDressId(); 
         System.out.print("Enter your rating (1-5): ");
         int rating;
+
         try {
             rating = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine(); 
             if (rating < 1 || rating > 5) {
                 System.out.println("Invalid rating. Please provide a rating between 1 and 5.");
                 return;
             }
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Rating must be a number between 1 and 5.");
-            scanner.nextLine(); // Clear invalid input
+            scanner.nextLine(); 
             return;
         }
-    
+
         System.out.print("Enter your feedback (optional): ");
         String feedback = scanner.nextLine();
-    
+
         Feedback newFeedback = new Feedback(
             generateFeedbackId(),
             customerId,
             reservationId,
-            dressId, // Pass Dress ID here
+            dressId,
             rating,
             feedback,
             new Date()
         );
         FeedbackManager.saveFeedback(newFeedback);
-    
         System.out.println("Thank you for your feedback!");
     }
 
+    /**
+     * Generates a unique feedback ID.
+     * @return A randomly generated feedback ID.
+     */
     private static String generateFeedbackId() {
         return "FB-" + (int) (Math.random() * 10000);
     }
 
-    //ADDED
+    /**
+     * Allows customers to customize dresses with various options.
+     * Includes custom embroidery, lace, accessories, and more.
+     */
     private static void customizeDress() {
-    System.out.print("Enter your Customer ID: ");
-    String customerId = scanner.nextLine();
-    Customer customer = customerManager.findCustomerById(customerId);
+        System.out.print("Enter your Customer ID: ");
+        String customerId = scanner.nextLine();
+        Customer customer = customerManager.findCustomerById(customerId);
 
-    if (customer == null) {
-        System.out.println("Customer ID not found. Please contact an employee to register.");
-        return;
-    }
-
-    System.out.print("Enter Dress ID to customize: ");
-    String dressId = scanner.nextLine();
-    InventoryItem dress = inventoryManager.findDressById(dressId);
-
-    if (dress == null) {
-        System.out.println("Dress not found in inventory.");
-        return;
-    }
-
-    List<String> customizations = new ArrayList<>();
-    while (true) {
-        System.out.println("Choose customization options:");
-        System.out.println("1. Add Embroidery (e.g., floral pattern, initials)");
-        System.out.println("2. Add Lace (e.g., sleeves, hemline, neckline)");
-        System.out.println("3. Add Accessories (e.g., beads, sequins, brooch)");
-        System.out.println("4. Custom Color (e.g., pastel blue, ivory, blush pink)");
-        System.out.println("5. Other (manual entry)");
-        System.out.print("Enter your choice (1-5): ");
-
-        int choice = 0;
-        try {
-            choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-        } catch (InputMismatchException e) {
-            System.out.println("Invalid input. Please enter a number between 1 and 5.");
-            scanner.nextLine(); // Clear invalid input
-            continue;
+        if (customer == null) {
+            System.out.println("Customer ID not found. Please contact an employee to register.");
+            return;
         }
 
-        String detail;
-        switch (choice) {
-            case 1 -> {
-                System.out.print("Enter embroidery details (e.g., floral pattern): ");
-                detail = "Embroidery: " + scanner.nextLine();
-                customizations.add(detail);
-            }
-            case 2 -> {
-                System.out.print("Enter lace details (e.g., hemline, neckline): ");
-                detail = "Lace: " + scanner.nextLine();
-                customizations.add(detail);
-            }
-            case 3 -> {
-                System.out.print("Enter accessory details (e.g., beads, sequins): ");
-                detail = "Accessories: " + scanner.nextLine();
-                customizations.add(detail);
-            }
-            case 4 -> {
-                System.out.print("Enter color details (e.g., pastel blue): ");
-                detail = "Color: " + scanner.nextLine();
-                customizations.add(detail);
-            }
-            case 5 -> {
-                System.out.print("Enter your custom details: ");
-                detail = "Custom: " + scanner.nextLine();
-                customizations.add(detail);
-            }
-            default -> {
-                System.out.println("Invalid option. Please choose a number between 1 and 5.");
-                continue;
-            }
-        }
-
-        System.out.print("Add another customization (Y/N)? ");
-        String more = scanner.nextLine();
-        if (!more.equalsIgnoreCase("Y")) {
-            break;
-        }
-    }
-
-    // Display customizations for confirmation
-    System.out.println("\nYou have added the following customizations for Dress ID: " + dressId);
-    customizations.forEach(c -> System.out.println("- " + c));
-    System.out.print("Confirm these customizations (Y/N)? ");
-    String confirm = scanner.nextLine();
-
-    if (confirm.equalsIgnoreCase("Y")) {
-        for (String customization : customizations) {
-            // Save each customization to the file
-            com.fashion.weddingdressrental.DressCustomization.Customization newCustomization =
-            new com.fashion.weddingdressrental.DressCustomization.Customization(
-                generateCustomizationId(), customerId, dressId, customization, 50.00, "Pending"
-            );
-            CustomizationManager.saveCustomization(newCustomization);
-        }
-        System.out.println("Customizations saved successfully!");
-    } else {
-        System.out.println("Customizations discarded.");
-    }
-}
-
-private static String generateCustomizationId() {
-    return "CUST-" + (int) (Math.random() * 10000);
-}
-
-    private static void updateDressStatus() {
-        System.out.print("Enter Dress ID to update: ");
+        System.out.print("Enter Dress ID to customize: ");
         String dressId = scanner.nextLine();
         InventoryItem dress = inventoryManager.findDressById(dressId);
 
@@ -794,17 +914,71 @@ private static String generateCustomizationId() {
             return;
         }
 
-        System.out.print("Enter new status (Available, Rented, Undergoing Repair, Retired): ");
-        String newStatus = scanner.nextLine();
+        List<String> customizations = new ArrayList<>();
+        while (true) {
+            System.out.println("Choose customization options:");
+            System.out.println("1. Add Embroidery");
+            System.out.println("2. Add Lace");
+            System.out.println("3. Add Accessories");
+            System.out.println("4. Custom Color");
+            System.out.println("5. Other");
 
-        try {
-            inventoryManager.updateDressStatus(dressId, newStatus);
-            System.out.println("Status updated successfully.");
-        } catch (Exception e) {
-            System.out.println("Error updating dress status: " + e.getMessage());
+            System.out.print("Enter your choice (1-5): ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+
+            String detail;
+            switch (choice) {
+                case 1 -> detail = "Embroidery: " + scanner.nextLine();
+                case 2 -> detail = "Lace: " + scanner.nextLine();
+                case 3 -> detail = "Accessories: " + scanner.nextLine();
+                case 4 -> detail = "Color: " + scanner.nextLine();
+                case 5 -> detail = "Custom: " + scanner.nextLine();
+                default -> {
+                    System.out.println("Invalid option.");
+                    continue;
+                }
+            }
+            customizations.add(detail);
+
+            System.out.print("Add another customization (Y/N)? ");
+            if (!scanner.nextLine().equalsIgnoreCase("Y")) {
+                break;
+            }
+        }
+
+        System.out.println("Customizations for Dress ID: " + dressId);
+        customizations.forEach(System.out::println);
+        System.out.print("Confirm these customizations (Y/N)? ");
+        if (scanner.nextLine().equalsIgnoreCase("Y")) {
+            customizations.forEach(detail -> CustomizationManager.saveCustomization(
+                new Customization(
+                    generateCustomizationId(),
+                    customerId, 
+                    dressId, 
+                    detail, 
+                    50.00, 
+                    "Pending"
+                )
+            ));
+            System.out.println("Customizations saved successfully!");
+        } else {
+            System.out.println("Customizations discarded.");
         }
     }
 
+    /**
+     * Generates a unique customization ID.
+     * @return A randomly generated customization ID.
+     */
+    private static String generateCustomizationId() {
+        return "CUST-" + (int) (Math.random() * 10000);
+    }
+
+    /**
+     * Processes pending alteration requests.
+     * Marks requests as "altered and ready" upon completion.
+     */
     private static void processDressAlterationRequest() {
         System.out.println("--- Pending Alteration Requests ---");
         List<AlterationRequest> allAlterations = AlterationManager.loadAlterationsFromFile();
@@ -819,9 +993,9 @@ private static String generateCustomizationId() {
         System.out.print("Enter the Alteration ID to process: ");
         String alterationId = scanner.nextLine();
         AlterationRequest alterationRequest = allAlterations.stream()
-                .filter(alteration -> alteration.getAlterationId().equals(alterationId))
-                .findFirst()
-                .orElse(null);
+            .filter(alteration -> alteration.getAlterationId().equals(alterationId))
+            .findFirst()
+            .orElse(null);
 
         if (alterationRequest == null) {
             System.out.println("Alteration request not found.");
@@ -829,28 +1003,23 @@ private static String generateCustomizationId() {
         }
 
         System.out.print("Enter 'start' to process the alteration: ");
-        String action = scanner.nextLine().trim().toLowerCase();
-
-        if (action.equals("start")) {
-            // Mark the alteration as "altered and ready"
+        if ("start".equalsIgnoreCase(scanner.nextLine().trim())) {
             alterationRequest.setStatus("altered and ready");
-
-            // Save the updated alteration request to file with new status
-            saveAlterationAsReady(alterationRequest);
-
-          
-
-            System.out.println("Alteration request has been processed and marked as 'altered and ready'.");
+            System.out.println("Alteration request processed.");
         } else {
             System.out.println("Invalid action entered.");
         }
     }
 
     // Helper method to save the updated alteration with status "altered and ready"
+    /**
+     * Saves an alteration request marked as "altered and ready" to a file.
+     * 
+     * @param alterationRequest The alteration request to be saved.
+     */
     private static void saveAlterationAsReady(AlterationRequest alterationRequest) {
         String filePath = "alterations.txt";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, true))) {
-            // Append the alteration with the "altered and ready" status
             writer.write(alterationRequest.toCSV() + "," + alterationRequest.getStatus());
             writer.newLine();
         } catch (IOException e) {
@@ -858,7 +1027,10 @@ private static String generateCustomizationId() {
         }
     }
 
-
+    /**
+     * Washes and prepares a returned dress for the next rental.
+     * Updates the dress status and saves changes to the inventory file.
+     */
     private static void washAndPrepDress() {
         System.out.print("Enter Store ID: ");
         String storeId = scanner.nextLine();
@@ -876,7 +1048,7 @@ private static String generateCustomizationId() {
         if ("Available".equalsIgnoreCase(dress.getStatus())) {
             dress.setStatus("In Progress");
             System.out.println("Dress marked for cleaning.");
-
+            
             dress.setStatus("Ready");
             System.out.println("Dress is now cleaned and ready for the next rental.");
         } else {
@@ -886,7 +1058,11 @@ private static String generateCustomizationId() {
         inventoryManager.saveInventoryToFile();
     }
 
-
+    /**
+     * Processes a rental checkout with a debit card.
+     * Validates reservation, processes payment, updates the dress status, 
+     * and saves the transaction to the file.
+     */
     private static void checkoutRentalWithDebitCard() {
         System.out.print("Enter Customer ID: ");
         String customerId = scanner.nextLine();
@@ -902,37 +1078,37 @@ private static String generateCustomizationId() {
         InventoryItem dress = inventoryManager.findDressById(dressId);
         List<Reservation> allReservations = ReservationManager.loadReservationsFromFile(customerManager, inventoryManager);
 
-
         if (dress == null) {
             System.out.println("Dress not found in inventory.");
             return;
         }
 
-        // Check if the customer has a reservation for the specified dress
         boolean hasReservation = customer.getReservations().stream()
-                .anyMatch(reservation -> reservation.getDress().getDressId().equals(dressId) && reservation.getStatus().equals("Confirmed"));
+                .anyMatch(reservation -> reservation.getDress().getDressId().equals(dressId) && 
+                                          reservation.getStatus().equals("Confirmed"));
 
         if (!hasReservation) {
-            System.out.println("Customer does not have a reservation for this dress. Payment cannot be processed.");
+            System.out.println("Customer does not have a confirmed reservation for this dress. Payment cannot be processed.");
             return;
         }
 
         System.out.print("Enter Account Number: ");
         String accountNumber = scanner.nextLine();
-
         double dressPrice = dress.getPrice();
 
-        // Ensure the customer has an account and sufficient funds
         if (customer.getAccount() != null && customer.getAccount().hasSufficientFunds(dressPrice)) {
             Payment payment = new Payment(dressPrice, customer, employee, PaymentType.DEBIT_CARD);
             if (payment.processPayment(accountNumber)) {
-                customer.getAccount().deductBalance(dressPrice,customerId);
-                customerManager.saveCustomersToFile();  // Save updated balance to file
+                customer.getAccount().deductBalance(dressPrice, customerId);
+                customerManager.saveCustomersToFile();
                 Account account = accountManager.findAccountByCustomerId(customerId);
                 accountManager.addOrUpdateAccount(customerId, account);
+
                 dress.setStatus("Rented");
-                ReservationManager.saveReservationsToFile(allReservations);
+                ReservationManager.updateReservationStatus(dressId, "Rented", allReservations);
                 inventoryManager.saveInventoryToFile();
+                saveRentalToFile(customerId, dressId, dressPrice);
+
                 System.out.println("Payment successful and transaction completed for dress: " + dressId);
             } else {
                 System.out.println("Payment processing failed.");
@@ -942,7 +1118,27 @@ private static String generateCustomizationId() {
         }
     }
 
+    /**
+     * Saves a rental record to the file "rented.txt".
+     * 
+     * @param customerId The ID of the customer renting the dress.
+     * @param dressId The ID of the rented dress.
+     * @param price The rental price of the dress.
+     */
+    private static void saveRentalToFile(String customerId, String dressId, double price) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("rented.txt", true))) {
+            writer.write(String.join(",", customerId, dressId, String.valueOf(price), new Date().toString()));
+            writer.newLine();
+            System.out.println("Rental record saved.");
+        } catch (IOException e) {
+            System.out.println("Error saving rental record: " + e.getMessage());
+        }
+    }
 
+    /**
+     * Processes the sale of a gift card using a debit card.
+     * Validates the customer's account and deducts funds if available.
+     */
     private static void sellGiftCardWithDebitCard() {
         System.out.print("Enter Customer ID: ");
         String customerId = scanner.nextLine();
@@ -955,7 +1151,7 @@ private static String generateCustomizationId() {
 
         System.out.print("Enter gift card amount: ");
         double amount = scanner.nextDouble();
-        scanner.nextLine(); // consume newline
+        scanner.nextLine(); 
 
         if (amount < 10) {
             System.out.println("Amount is below minimum requirement.");
@@ -967,19 +1163,23 @@ private static String generateCustomizationId() {
 
         Payment payment = new Payment(amount, customer, employee, PaymentType.DEBIT_CARD);
         if (payment.processPayment(accountNumber) && customer.getAccount().hasSufficientFunds(amount)) {
-            customer.getAccount().deductBalance(amount,customerId);
+            customer.getAccount().deductBalance(amount, customerId);
             customerManager.saveCustomersToFile();
             Account account = accountManager.findAccountByCustomerId(customerId);
             accountManager.addOrUpdateAccount(customerId, account);
             saveGiftCardToFile(customerId, amount);
             System.out.println("Gift card sold successfully.");
-            System.out.println("Amount deducted from account: $" + amount);
-            System.out.println("Remaining balance: $" + customer.getAccount().getBalance());
         } else {
             System.out.println("Insufficient funds.");
         }
     }
 
+    /**
+     * Saves a gift card purchase to the file "giftcards.txt".
+     * 
+     * @param customerId The ID of the customer buying the gift card.
+     * @param amount The amount loaded on the gift card.
+     */
     private static void saveGiftCardToFile(String customerId, double amount) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("giftcards.txt", true))) {
             writer.write(customerId + "," + amount + "," + new Date().getTime());
@@ -990,6 +1190,10 @@ private static String generateCustomizationId() {
         }
     }
 
+    /**
+     * Allows customers to request a dress alteration.
+     * Verifies customer details, active reservation, and alteration eligibility.
+     */
     private static void requestDressAlteration() {
         System.out.print("Enter your Customer ID: ");
         String customerId = scanner.nextLine();
@@ -1016,19 +1220,24 @@ private static String generateCustomizationId() {
 
         System.out.print("Enter details for alteration (e.g., shorten hem, adjust waist): ");
         String details = scanner.nextLine();
-
         Date completionDate = new Date();
         AlterationRequest alterationRequest = customer.requestAlteration(details, completionDate, employee);
 
         if (alterationRequest != null) {
             System.out.println("Alteration request submitted: " + alterationRequest);
             customerManager.saveCustomersToFile();
-            System.out.println("Customer data has been updated and saved to file.");
         } else {
             System.out.println("Alteration request could not be submitted due to insufficient funds.");
         }
     }
 
+    /**
+     * Checks if a customer has a confirmed reservation for a specific dress.
+     *
+     * @param customerId The ID of the customer.
+     * @param dressId    The ID of the dress.
+     * @return true if the reservation exists and is confirmed, false otherwise.
+     */
     private static boolean hasReservationForDress(String customerId, String dressId) {
         try (BufferedReader reader = new BufferedReader(new FileReader("reservations.txt"))) {
             String line;
@@ -1038,7 +1247,6 @@ private static String generateCustomizationId() {
                     String reservedCustomerId = parts[1];
                     String reservedDressId = parts[2];
                     String reservationStatus = parts[5];
-
                     if (reservedCustomerId.equals(customerId) && reservedDressId.equals(dressId) && reservationStatus.equals("Confirmed")) {
                         return true;
                     }
@@ -1050,10 +1258,19 @@ private static String generateCustomizationId() {
         return false;
     }
 
+    /**
+     * Generates a unique reservation ID using the current timestamp.
+     *
+     * @return A unique reservation ID string.
+     */
     private static String generateUniqueReservationID() {
-        return "RES-" + System.currentTimeMillis(); // Using the current timestamp
+        return "RES-" + System.currentTimeMillis();
     }
 
+    /**
+     * Allows a customer to make a dress reservation.
+     * Validates availability, deducts funds, confirms the reservation, and updates the inventory.
+     */
     private static void makeDressReservation() {
         System.out.print("Enter your Customer ID: ");
         String customerId = scanner.nextLine();
@@ -1064,69 +1281,78 @@ private static String generateCustomizationId() {
             return;
         }
 
+        System.out.print("Enter Store ID: ");
+        String storeId = scanner.nextLine();
+
         System.out.print("Enter Dress ID to reserve: ");
         String dressId = scanner.nextLine();
-        InventoryItem dress = inventoryManager.findDressById(dressId);
+
+        InventoryItem dress = inventoryManager.findDressByIdInStore(storeId, dressId);
 
         if (dress == null) {
-            System.out.println("Dress not found in inventory.");
+            System.out.println("Dress not found in the specified store.");
             return;
         }
 
-        if (!"Available".equals(dress.getStatus())) {
-            System.out.println("Dress is not available for reservation. Current status: " + dress.getStatus());
+        if (!"Available".equalsIgnoreCase(dress.getStatus()) || dress.getQuantity() <= 0) {
+            System.out.println("Dress is not available for reservation.");
             return;
         }
 
-        double dressPrice = 10.00;
+        System.out.print("Enter Quantity to Reserve: ");
+        int quantity = scanner.nextInt();
+        scanner.nextLine();
+
+        if (quantity > dress.getQuantity()) {
+            System.out.println("Requested quantity exceeds available stock.");
+            return;
+        }
+
+        double dressPrice = dress.getPrice() * quantity;
 
         if (customer.getAccount() != null && customer.getAccount().hasSufficientFunds(dressPrice)) {
             customer.getAccount().deductBalance(dressPrice, customerId);
+            inventoryManager.deductInventory(storeId, dressId, quantity);
 
-            accountManager.addOrUpdateAccount(customerId, customer.getAccount());
-            String uniqueReservationId = generateUniqueReservationID(); // Generate a unique ID
-            Reservation reservation = new Reservation(uniqueReservationId, customer, dress, new Date(), new Date());
+            String uniqueReservationId = generateUniqueReservationID();
+            Reservation reservation = new Reservation(
+                    uniqueReservationId, customer, dress, new Date(),
+                    new Date(System.currentTimeMillis() + (1000L * 60 * 60 * 24 * 7)), storeId, quantity);
+
+            ReservationManager.saveReservationToFile(reservation);
             customer.addReservation(reservation);
-
-            List<Reservation> allReservations = ReservationManager.loadReservationsFromFile(customerManager, inventoryManager);
-            allReservations.add(reservation);
-            ReservationManager.saveReservationsToFile(allReservations);
-
             customerManager.saveCustomersToFile();
-            System.out.println("Reservation confirmed for customer " + customer.getName());
-            System.out.println("Amount deducted from account: $" + dressPrice);
-            System.out.println("Remaining balance: $" + customer.getAccount().getBalance());
+
+            System.out.println("Reservation confirmed for " + customer.getName());
         } else {
             System.out.println("Insufficient funds. Please add funds to your account.");
         }
     }
 
+    /**
+     * Adds a new customer to the system.
+     * Collects customer details, creates an account, and registers the customer in the system.
+     */
     private static void addNewCustomer() {
         System.out.print("Enter Customer Name: ");
         String name = scanner.nextLine();
 
         System.out.print("Enter Customer Email (or press Enter to skip): ");
-        String emailInput = scanner.nextLine();
-        String email = emailInput.isEmpty() ? "Not specified" : emailInput;
+        String email = scanner.nextLine().isEmpty() ? "Not specified" : scanner.nextLine();
 
         System.out.print("Enter initial Store Credit (or press Enter to skip): ");
         double storeCredit = scanner.hasNextDouble() ? scanner.nextDouble() : 0.0;
-        scanner.nextLine(); // consume newline
-
-        System.out.print("Enter initial Store Points (or press Enter to skip): ");
-        int storePoints = scanner.hasNextInt() ? scanner.nextInt() : 0;
-        scanner.nextLine(); // consume newline
+        scanner.nextLine();
 
         System.out.print("Enter Bank Account Balance (or press Enter to skip): ");
         double accountBalance = scanner.hasNextDouble() ? scanner.nextDouble() : 0.0;
-        scanner.nextLine(); // consume newline
+        scanner.nextLine();
 
         System.out.print("Enter Preferred Size (S, M, L, etc., or press Enter to skip): ");
-        String sizeInput = scanner.nextLine();
-        String preferredSize = sizeInput.isEmpty() ? "Not specified" : sizeInput.toUpperCase();
+        String preferredSize = scanner.nextLine().isEmpty() ? "Not specified" : scanner.nextLine().toUpperCase();
 
         String customerId = "CUST-" + (int) (Math.random() * 1000);
-        Customer customer = new Customer(customerId, name, storeCredit, storePoints, preferredSize, email);
+        Customer customer = new Customer(customerId, name, storeCredit, 0, preferredSize, email);
         Account account = new Account(accountBalance);
         customer.setAccount(account);
         customerManager.addCustomer(customer);
@@ -1135,13 +1361,18 @@ private static String generateCustomizationId() {
         System.out.println("Customer added successfully with ID: " + customer.getCustomerId());
     }
 
+    /**
+     * Displays account details of a specified customer.
+     * 
+     * @param customerId The unique customer ID.
+     */
     private static void viewAccountDetails() {
         System.out.print("Enter your Customer ID: ");
         String customerId = scanner.nextLine();
         Customer customer = customerManager.findCustomerById(customerId);
 
         if (customer == null) {
-            System.out.println("Customer ID not found. Please contact an employee to register.");
+            System.out.println("Customer ID not found.");
             return;
         }
 
@@ -1149,15 +1380,14 @@ private static String generateCustomizationId() {
         System.out.println("Customer ID: " + customer.getCustomerId());
         System.out.println("Name: " + customer.getName());
         System.out.println("Store Credit: $" + customer.getStoreCredit());
-        System.out.println("Store Points: " + customer.getStorePoints());
-        if (customer.getAccount() != null) {
-            System.out.println("Bank Account Balance: $" + customer.getAccount().getBalance());
-        } else {
-            System.out.println("No bank account linked.");
-        }
-        System.out.println("Preferred Size: " + (customer.getSize() != null ? customer.getSize() : "Not specified"));
+        System.out.println("Bank Account Balance: $" + customer.getAccount().getBalance());
+        System.out.println("Preferred Size: " + customer.getSize());
     }
 
+    /**
+     * Displays the HR management menu and processes HR-related actions.
+     * Handles tasks such as hiring, managing interviews, and assigning training.
+     */
     private static void HRMenu() {
         while (true) {
             System.out.println("\n--- HR Menu ---");
@@ -1166,17 +1396,16 @@ private static String generateCustomizationId() {
             System.out.println("3. Assign Interview");
             System.out.println("4. Hire Candidate");
             System.out.println("5. View Employees");
-            System.out.println("6. View all interviews");
             System.out.println("6. View All Interviews");
-            System.out.println("7. Create Training Session"); 
+            System.out.println("7. Create Training Session");
             System.out.println("8. Assign Employees to Training");
             System.out.println("9. View All Training Sessions");
             System.out.println("10. Mark Training as Completed");
             System.out.println("0. Exit HR Menu");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
-    
+            scanner.nextLine();
+
             switch (choice) {
                 case 1 -> addCandidate();
                 case 2 -> candidateManager.displayCandidates();
@@ -1193,8 +1422,11 @@ private static String generateCustomizationId() {
             }
         }
     }
-    
-    //ADDED
+
+    /**
+     * Handles the creation of a training session.
+     * Prompts the HR representative for session details.
+     */
     private static void createTrainingSessionMenu() {
         System.out.print("Enter topic: ");
         String topic = scanner.nextLine();
@@ -1202,76 +1434,94 @@ private static String generateCustomizationId() {
         String trainer = scanner.nextLine();
         System.out.print("Enter date (MM/DD/YYYY): ");
         String date = scanner.nextLine();
-    
-        hr.createTrainingSessionMenu();
+        hr.createTrainingSession(topic, trainer, date);
     }
-    
+
+    /**
+     * Assigns employees to a specific training session.
+     */
     private static void assignEmployeesToTrainingMenu() {
         System.out.print("Enter Training ID: ");
         String trainingId = scanner.nextLine();
-    
-        System.out.println("Enter Employee IDs to assign (comma-separated): ");
+
+        System.out.println("Enter Employee IDs (comma-separated): ");
         String employeeIdsInput = scanner.nextLine();
         List<String> employeeIds = List.of(employeeIdsInput.split(","));
-    
+
         hr.assignEmployeesToTraining(trainingId, employeeIds);
     }
-    
+
+    /**
+     * Marks a training session as completed.
+     */
     private static void markTrainingAsCompletedMenu() {
         System.out.print("Enter Training ID to mark as completed: ");
         String trainingId = scanner.nextLine();
         hr.markTrainingAsCompleted(trainingId);
     }
 
-
+    /**
+     * Hires a candidate by assigning them a salary, location, and role.
+     * Prompts the user for the required details and processes the hiring request.
+     */
     private static void hireCandidate() {
         System.out.print("Enter Candidate ID: ");
         String candidateId = scanner.nextLine();
-    
+
         System.out.print("Enter Salary: ");
         double salary = scanner.nextDouble();
         scanner.nextLine(); 
-    
+
         System.out.print("Enter Location: ");
         String location = scanner.nextLine();
-    
+
         System.out.print("Enter Role: ");
         String role = scanner.nextLine();
-    
+
         hr.hireCandidate(candidateId, salary, location, role);
     }
 
+    /**
+     * Adds a new candidate to the system.
+     * Collects candidate information such as name, email, phone number, and resume details.
+     * Generates a unique candidate ID and saves the candidate record.
+     */
     private static void addCandidate() {
         System.out.print("Enter Candidate Name: ");
         String name = scanner.nextLine();
-    
+
         System.out.print("Enter Candidate Email: ");
         String email = scanner.nextLine();
-    
+
         System.out.print("Enter Candidate Phone: ");
         String phone = scanner.nextLine();
-    
+
         System.out.print("Enter Resume (File Path or Description): ");
         String resume = scanner.nextLine();
-    
+
         String candidateId = "CAND-" + (int) (Math.random() * 10000);
         Candidate candidate = new Candidate(candidateId, name, email, phone, resume);
         candidateManager.addCandidate(candidate);
         System.out.println("Candidate added successfully.");
     }
-    
+
+    /**
+     * Assigns an interview to a candidate by prompting for interview details.
+     * Collects the candidate ID, interview time, and location, and schedules the interview.
+     */
     private static void assignInterview() {
         System.out.print("Enter Candidate ID: ");
         String candidateId = scanner.nextLine();
-    
+
         System.out.print("Enter Interview Time (Time,MM/DD/YY): ");
         String time = scanner.nextLine();
-    
+
         System.out.print("Enter Interview Location: ");
         String location = scanner.nextLine();
-    
+
         hr.assignInterview(candidateId, time, location);
     }
+
 
     /**
      * Method to display all Event Manager menu

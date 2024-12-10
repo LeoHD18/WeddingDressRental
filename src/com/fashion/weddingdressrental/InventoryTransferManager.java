@@ -3,37 +3,58 @@ package com.fashion.weddingdressrental;
 import java.io.*;
 import java.util.*;
 
+/**
+ * Manages inventory transfers between stores in the wedding dress rental system.
+ * This class handles the creation, approval, rejection, and tracking of inventory
+ * transfer requests between stores. It maintains persistent storage of transfer
+ * records and coordinates with the InventoryManager for stock updates.
+ */
 public class InventoryTransferManager {
     private static final String FILE_PATH = "inventory_transfers.txt";
     private final List<InventoryTransfer> transfers;
     private final InventoryManager inventoryManager;
 
-    // Constructor
+    /**
+     * Constructs a new InventoryTransferManager with the specified InventoryManager.
+     * Initializes the transfers list and loads existing transfer records from file.
+     *
+     * @param inventoryManager The InventoryManager instance to handle inventory operations
+     */
     public InventoryTransferManager(InventoryManager inventoryManager) {
         transfers = new ArrayList<>();
         this.inventoryManager = inventoryManager;
         loadTransfersFromFile();
     }
 
-   
- // Request Inventory Transfer
+    /**
+     * Creates a new inventory transfer request between stores.
+     * Validates availability in the providing store before creating the request.
+     *
+     * @param fromStoreId The ID of the store requesting the transfer
+     * @param toStoreId   The ID of the store providing the inventory
+     * @param product     The ID of the dress being transferred
+     * @param price       The price of the dress
+     * @param quantity    The quantity requested
+     */
     public void requestTransfer(String fromStoreId, String toStoreId, String product, double price, int quantity) {
-        // Correct check: Validate if the `To Store` has enough inventory
         if (inventoryManager.getDressQuantity(toStoreId, product) < quantity) {
             System.out.println("Error: Insufficient inventory in the providing store.");
             return;
         }
 
-        // Create transfer request
         String transferId = "INV-" + (int) (Math.random() * 1000);
-        InventoryTransfer transfer = new InventoryTransfer(transferId, fromStoreId, toStoreId, product,price, quantity, "Pending");
+        InventoryTransfer transfer = new InventoryTransfer(transferId, fromStoreId, toStoreId, product, price, quantity, "Pending");
         transfers.add(transfer);
         saveTransfersToFile();
         System.out.println("Inventory transfer request submitted!");
     }
 
-
-    // View Pending Requests for a Specific Store
+    /**
+     * Displays pending transfer requests for a specific store.
+     * Shows all requests where the specified store is the provider and status is pending.
+     *
+     * @param storeId The ID of the store to check pending requests for
+     */
     public void viewPendingRequestsForStore(String storeId) {
         boolean found = false;
         System.out.println("\n--- Pending Transfer Requests for Store: " + storeId + " ---");
@@ -48,24 +69,28 @@ public class InventoryTransferManager {
         }
     }
 
-    // Approve Transfer
+    /**
+     * Approves a pending transfer request and updates inventory accordingly.
+     * Verifies availability in the providing store before processing the transfer.
+     *
+     * @param toStoreId  The ID of the providing store
+     * @param transferId The ID of the transfer request to approve
+     */
     public void approveTransfer(String toStoreId, String transferId) {
         for (InventoryTransfer transfer : transfers) {
             if (transfer.getTransferId().equals(transferId)
                 && transfer.getToStoreId().equals(toStoreId)
                 && transfer.getStatus().equals("Pending")) {
 
-                String fromStoreId = transfer.getFromStoreId(); // Requesting Store
+                String fromStoreId = transfer.getFromStoreId();
                 String product = transfer.getProduct();
                 int quantity = transfer.getQuantity();
 
-                // Check if the providing store (toStoreId) has enough inventory
                 if (!inventoryManager.deductInventory(toStoreId, product, quantity)) {
                     System.out.println("Error: Insufficient inventory for dress ID " + product + " in store " + toStoreId);
                     return;
                 }
 
-                // Add inventory to the requesting store
                 double price = transfer.getPrice();
                 inventoryManager.addInventory(fromStoreId, product, "Available", price, quantity);
 
@@ -78,7 +103,13 @@ public class InventoryTransferManager {
         System.out.println("Transfer not found or already processed.");
     }
 
-    // Reject Transfer
+    /**
+     * Rejects a pending transfer request.
+     * Only allows rejection if the request is pending and matches the specified store.
+     *
+     * @param storeId    The ID of the providing store
+     * @param transferId The ID of the transfer request to reject
+     */
     public void rejectTransfer(String storeId, String transferId) {
         for (InventoryTransfer transfer : transfers) {
             if (transfer.getTransferId().equals(transferId)
@@ -94,7 +125,10 @@ public class InventoryTransferManager {
         System.out.println("Transfer not found or already processed.");
     }
 
-    // View All Transfers (For Admin Use)
+    /**
+     * Displays all transfer requests in the system.
+     * For administrative use to view complete transfer history.
+     */
     public void viewAllTransfers() {
         if (transfers.isEmpty()) {
             System.out.println("No inventory transfers found.");
@@ -106,13 +140,16 @@ public class InventoryTransferManager {
         }
     }
 
-    // Load Transfers from File
+    /**
+     * Loads transfer records from the file system.
+     * Parses each line into an InventoryTransfer object and adds it to the transfers list.
+     */
     private void loadTransfersFromFile() {
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length == 7) {  // Corrected to expect 7 fields
+                if (parts.length == 7) {
                     transfers.add(new InventoryTransfer(
                         parts[0],                     // Transfer ID
                         parts[1],                     // From Store
@@ -128,10 +165,11 @@ public class InventoryTransferManager {
             System.out.println("Error loading transfers: " + e.getMessage());
         }
     }
-    
 
-
-    // Save Transfers to File
+    /**
+     * Saves all transfer records to the file system.
+     * Writes each transfer as a comma-separated line of values.
+     */
     private void saveTransfersToFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
             for (InventoryTransfer transfer : transfers) {
